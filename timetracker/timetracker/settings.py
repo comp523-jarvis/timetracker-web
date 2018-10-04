@@ -142,3 +142,4 @@ STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = 'account:profile'
 LOGIN_URL = 'account:login'
+LOGOUT_REDIRECT_URL = 'home'

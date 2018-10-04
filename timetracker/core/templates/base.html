@@ -12,6 +12,7 @@
         {% if request.user.is_authenticated %}
         <li><a href="{% url 'vms:dashboard' %}">Dashboard</a></li>
         <li><a href="{% url 'account:profile' %}">Profile</a></li>
+        <li><a href="{% url 'account:logout' %}">Log Out</a></li>
         {% else %}
         <li><a href="{% url 'account:login' %}">Log In</a></li>
         {% endif %}
