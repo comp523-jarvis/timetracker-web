@@ -12,6 +12,11 @@ urlpatterns = [
         name='clock-in',
     ),
     path(
+        'employees/<uuid:employee_id>/clock-out/',
+        views.ClockOutView.as_view(),
+        name='clock-out',
+    ),
+    path(
         'dashboard/',
         views.DashboardView.as_view(),
         name='dashboard',

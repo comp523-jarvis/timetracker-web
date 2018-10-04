@@ -6,7 +6,7 @@
   <h2>Quick Links</h2>
   {% for employee in employees %}
     {% if employee.is_clocked_in %}
-      <a href="#">Clock Out {{ employee }}</a>
+      <a href="{% url 'vms:clock-out' employee.id %}">Clock Out {{ employee }}</a>
     {% else %}
     <a href="{% url 'vms:clock-in' employee.id %}">Clock In {{ employee }}</a>
     {% endif %}

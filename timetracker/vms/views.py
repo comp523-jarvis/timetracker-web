@@ -24,6 +24,48 @@ class ClockInView(FormView):
         kwargs['employee'] = get_object_or_404(
             models.Employee,
             pk=self.kwargs.get('employee_id'),
+            user=self.request.user,
+        )
+
+        return kwargs
+
+
+class ClockOutView(FormView):
+    """
+    View for clocking out.
+    """
+    form_class = forms.ClockOutForm
+    success_url = reverse_lazy('vms:dashboard')
+    template_name = 'vms/clock-out.html'
+
+    def form_valid(self, form):
+        """
+        Save the valid form instance.
+
+        Args:
+            form:
+                The valid form instance.
+
+        Returns:
+            A redirect response for the user.
+        """
+        form.save()
+
+        return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        """
+        Add the employee as a parameter for the form.
+
+        Returns:
+            The kwargs to instantiate the form instance with.
+        """
+        kwargs = super().get_form_kwargs()
+
+        kwargs['employee'] = get_object_or_404(
+            models.Employee,
+            pk=self.kwargs.get('employee_id'),
+            user=self.request.user,
         )
 
         return kwargs
