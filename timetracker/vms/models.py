@@ -1,7 +1,9 @@
+import datetime
 import uuid
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Func, F, Sum
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
@@ -82,6 +84,25 @@ class Employee(models.Model):
             A boolean indicating if the employee is clocked in.
         """
         return self.time_records.filter(time_end=None).exists()
+
+    @property
+    def total_time(self):
+        """
+        Get the total time that the employee has logged.
+
+        Returns:
+            The total time the employee has worked in seconds, rounded
+            to the nearest 15 minute increment.
+        """
+        hours = datetime.timedelta(0)
+        for record in self.time_records.exclude(time_end=None):
+            hours += record.time_end - record.time_start
+
+        seconds = hours.total_seconds()
+        seconds += 15 * 60 / 2
+        seconds -= seconds % (15 * 60)
+
+        return seconds
 
 
 class TimeRecord(models.Model):
