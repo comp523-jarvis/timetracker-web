@@ -1,7 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Dashboard</h1>
+  <h1>Dashboard</h1>
 
+  <h2>Quick Links</h2>
+  {% for employee in employees %}
+    {% if employee.is_clocked_in %}
+      <a href="#">Clock Out {{ employee }}</a>
+    {% else %}
+    <a href="{% url 'vms:clock-in' employee.id %}">Clock In {{ employee }}</a>
+    {% endif %}
+  {% endfor %}
+
+  <h2>Stats</h2>
+  <p>You are{% if not clocked_in %} not{% endif %} currently clocked in.</p>
   <p>{{ request.user.name }}, you have worked {{ total_hours }} hour(s).</p>
 {% endblock %}
