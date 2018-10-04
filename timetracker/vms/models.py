@@ -23,14 +23,6 @@ class Employee(models.Model):
                     'Inactive employees log any working hours.'),
         verbose_name=_('is active'),
     )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        help_text=_('The user account the employee is attached to.'),
-        on_delete=models.CASCADE,
-        related_name='employees',
-        related_query_name='employee',
-        verbose_name=_('user'),
-    )
     time_created = models.DateTimeField(
         auto_now_add=True,
         help_text=_('The time the employee was created.'),
@@ -40,6 +32,14 @@ class Employee(models.Model):
         auto_now=True,
         help_text=_('The time the employee was last updated.'),
         verbose_name=_('time updated'),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        help_text=_('The user account the employee is attached to.'),
+        on_delete=models.CASCADE,
+        related_name='employees',
+        related_query_name='employee',
+        verbose_name=_('user'),
     )
     wage = models.DecimalField(
         decimal_places=2,
