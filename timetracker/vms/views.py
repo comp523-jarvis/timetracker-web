@@ -3,10 +3,10 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
-from vms import forms, models
+from vms import forms, models, time_utils
 
 
-class ClockInView(FormView):
+class ClockInView(LoginRequiredMixin, FormView):
     """
     View for clocking in.
     """
@@ -30,7 +30,7 @@ class ClockInView(FormView):
         return kwargs
 
 
-class ClockOutView(FormView):
+class ClockOutView(LoginRequiredMixin, FormView):
     """
     View for clocking out.
     """
@@ -84,6 +84,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['clocked_in'] = clocked_in
 
         seconds_worked = sum([emp.total_time for emp in employees])
+        seconds_worked = time_utils.round_time_worked(seconds_worked)
         context['total_hours'] = seconds_worked / (60 * 60)
 
         return context

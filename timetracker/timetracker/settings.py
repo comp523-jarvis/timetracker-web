@@ -140,6 +140,6 @@ STATIC_URL = '/static/'
 
 # Login/Logout URLs
 
-LOGIN_REDIRECT_URL = 'account:profile'
+LOGIN_REDIRECT_URL = 'vms:dashboard'
 LOGIN_URL = 'account:login'
 LOGOUT_REDIRECT_URL = 'home'

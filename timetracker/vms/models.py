@@ -98,11 +98,7 @@ class Employee(models.Model):
         for record in self.time_records.exclude(time_end=None):
             hours += record.time_end - record.time_start
 
-        seconds = hours.total_seconds()
-        seconds += 15 * 60 / 2
-        seconds -= seconds % (15 * 60)
-
-        return seconds
+        return hours.total_seconds()
 
 
 class TimeRecord(models.Model):
