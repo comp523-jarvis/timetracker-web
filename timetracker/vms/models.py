@@ -3,7 +3,6 @@ import uuid
 
 from django.conf import settings
 from django.db import models
-from django.db.models import Func, F, Sum
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
