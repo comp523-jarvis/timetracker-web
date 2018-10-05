@@ -17,7 +17,6 @@
   <p>{{ request.user.name }}, you have worked {{ total_hours }} hour(s).</p>
 
   <h3>Time Records</h3>
-  <p><em>Note: All times are in UTC</em></p>
   {% for employee in employees %}
     <h4>{{ employee }}</h4>
     <table style="text-align: center;">

@@ -11,6 +11,11 @@ class Employee(models.Model):
     """
     An employee working for a specific company.
     """
+    company = models.CharField(
+        help_text=_('The name of the company the employee works for.'),
+        max_length=100,
+        verbose_name=_('company name'),
+    )
     id = models.UUIDField(
         default=uuid.uuid4,
         help_text=_('A unique identifier for the employee.'),
@@ -72,7 +77,7 @@ class Employee(models.Model):
             A string containing the name of the user who owns the
             employee instance.
         """
-        return f'Employee {self.user.name}'
+        return f'{self.user.name} ({self.company})'
 
     @property
     def is_clocked_in(self):

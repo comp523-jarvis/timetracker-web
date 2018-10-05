@@ -45,12 +45,6 @@ class User(PermissionsMixin, AbstractBaseUser):
         max_length=100,
         verbose_name=_('full name'),
     )
-    username = models.CharField(
-        help_text=_('The name the user logs in as.'),
-        max_length=100,
-        unique=True,
-        verbose_name=_('username'),
-    )
     time_created = models.DateTimeField(
         auto_now_add=True,
         help_text=_('The time the user was created.'),
@@ -60,6 +54,20 @@ class User(PermissionsMixin, AbstractBaseUser):
         auto_now=True,
         help_text=_('The time the user was last updated.'),
         verbose_name=_('time updated'),
+    )
+    timezone = models.CharField(
+        default='America/New_York',
+        help_text=_("The user's timezone."),
+        # Max length computed with:
+        # >>> import pytz
+        # >>> len(max(pytz.all_timezones, key=len))
+        max_length=32,
+    )
+    username = models.CharField(
+        help_text=_('The name the user logs in as.'),
+        max_length=100,
+        unique=True,
+        verbose_name=_('username'),
     )
 
     # Custom Manager

@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Employee',
             fields=[
+                ('company', models.CharField(help_text='The name of the company the employee works for.', max_length=100, verbose_name='company name')),
                 ('id', models.UUIDField(default=uuid.uuid4, help_text='A unique identifier for the employee.', primary_key=True, serialize=False, unique=True, verbose_name='ID')),
                 ('is_active', models.BooleanField(default=True, help_text='A boolean indicating if this user is currently active. Inactive employees log any working hours.', verbose_name='is active')),
                 ('time_created', models.DateTimeField(auto_now_add=True, help_text='The time the employee was created.', verbose_name='time created')),

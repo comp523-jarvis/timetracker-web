@@ -9,7 +9,7 @@ app_name = 'account'
 urlpatterns = [
     path(
         'login/',
-        LoginView.as_view(),
+        views.LoginView.as_view(),
         name='login',
     ),
     path(

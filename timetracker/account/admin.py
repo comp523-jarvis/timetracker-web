@@ -25,7 +25,7 @@ class UserAdmin(auth_admin.UserAdmin):
             ),
         }),
         (_('Time Information'), {
-            'fields': ('time_created', 'time_updated'),
+            'fields': ('timezone', 'time_created', 'time_updated'),
         }),
     )
     list_display = (
