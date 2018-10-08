@@ -16,18 +16,16 @@ class Employee(models.Model):
         max_length=100,
         verbose_name=_('company name'),
     )
-    id = models.UUIDField(
-        default=uuid.uuid4,
-        help_text=_('A unique identifier for the employee.'),
-        primary_key=True,
-        unique=True,
-        verbose_name=_('ID'),
-    )
     is_active = models.BooleanField(
         default=True,
         help_text=_('A boolean indicating if this user is currently active. '
                     'Inactive employees log any working hours.'),
         verbose_name=_('is active'),
+    )
+    supervisor = models.CharField(
+        help_text=_("The employee's supervisor."),
+        max_length=100,
+        verbose_name=_('supervisor'),
     )
     time_created = models.DateTimeField(
         auto_now_add=True,
@@ -47,12 +45,6 @@ class Employee(models.Model):
         related_query_name='employee',
         verbose_name=_('user'),
     )
-    wage = models.DecimalField(
-        decimal_places=2,
-        help_text=_("The employee's hourly wage."),
-        max_digits=10,
-        verbose_name=_('hourly wage'),
-    )
 
     class Meta:
         ordering = ('time_created',)
@@ -67,7 +59,10 @@ class Employee(models.Model):
             A string containing the information required to reconstruct
             the employee.
         """
-        return f'Employee(id={self.id:r}, user_id={self.user.id:r})'
+        return (
+            f'Employee(id={self.id:r}, user_id={self.user.id:r}, '
+            f'company={self.company:r}, supervisor={self.supervisor:r})'
+        )
 
     def __str__(self):
         """

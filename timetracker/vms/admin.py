@@ -7,10 +7,24 @@ from vms import models
 class EmployeeAdmin(admin.ModelAdmin):
     autocomplete_fields = ('user',)
     date_hierarchy = 'time_created'
-    fields = ('user', 'company', 'wage')
-    list_display = ('user', 'company', 'is_active', 'time_created')
+    fields = (
+        'user',
+        'company',
+        'supervisor',
+        'is_active',
+        'time_created',
+        'time_updated',
+    )
+    list_display = (
+        'user',
+        'company',
+        'supervisor',
+        'is_active',
+        'time_created',
+    )
     list_filter = ('is_active',)
-    search_fields = ('company', 'user__name',)
+    readonly_fields = ('time_created', 'time_updated')
+    search_fields = ('company', 'supervisor', 'user__name',)
 
 
 @admin.register(models.TimeRecord)
