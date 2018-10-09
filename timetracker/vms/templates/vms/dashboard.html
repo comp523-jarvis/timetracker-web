@@ -8,7 +8,7 @@
     {% if employee.is_clocked_in %}
       <a href="{% url 'vms:clock-out' employee.id %}">Clock Out {{ employee }}</a>
     {% else %}
-    <a href="{% url 'vms:clock-in' employee.id %}">Clock In {{ employee }}</a>
+      <a href="{% url 'vms:clock-in' employee.id %}">Clock In {{ employee }}</a>
     {% endif %}
   {% endfor %}
 

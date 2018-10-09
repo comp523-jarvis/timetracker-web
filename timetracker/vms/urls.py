@@ -7,12 +7,12 @@ app_name = 'vms'
 
 urlpatterns = [
     path(
-        'employees/<uuid:employee_id>/clock-in/',
+        'employees/<int:employee_id>/clock-in/',
         views.ClockInView.as_view(),
         name='clock-in',
     ),
     path(
-        'employees/<uuid:employee_id>/clock-out/',
+        'employees/<int:employee_id>/clock-out/',
         views.ClockOutView.as_view(),
         name='clock-out',
     ),
