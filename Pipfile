@@ -10,6 +10,10 @@ django = "*"
 [dev-packages]
 ipython = "*"
 "flake8" = "*"
+pytest = "*"
+pytest-django = "*"
+factory-boy = "*"
+pipenv = "*"
 
 [requires]
 python_version = "3.6"

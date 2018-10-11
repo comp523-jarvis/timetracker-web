@@ -4,11 +4,17 @@ python: 3.6
 
 cache: pip
 
+env:
+  global:
+    - DJANGO_SECRET_KEY=test
+
 install:
   - pip install --upgrade pipenv
   - pipenv install --dev
 
-script: pipenv run flake8
+script:
+  - pipenv run flake8
+  - pipenv run pytest timetracker/
 
 notifications:
   email:
