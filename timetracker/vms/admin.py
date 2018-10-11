@@ -31,7 +31,16 @@ class EmployeeAdmin(admin.ModelAdmin):
 class TimeRecordAdmin(admin.ModelAdmin):
     autocomplete_fields = ('employee',)
     date_hierarchy = 'time_start'
-    fields = ('employee', 'time_start', 'time_end', 'is_approved')
-    list_display = ('employee', 'time_start', 'time_end', 'is_approved')
-    list_filter = ('is_approved',)
+    fields = ('employee', 'time_start', 'time_end')
+    list_display = ('employee', 'time_start', 'time_end')
     search_fields = ('employee__user__name',)
+
+
+@admin.register(models.TimeRecordApproval)
+class TimeRecordApprovalAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('user',)
+    date_hierarchy = 'time_approved'
+    fields = ('time_record', 'user', 'time_approved')
+    list_display = ('time_record', 'user', 'time_approved')
+    readonly_fields = ('time_approved',)
+    search_fields = ('user__name',)

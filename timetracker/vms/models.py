@@ -119,12 +119,6 @@ class TimeRecord(models.Model):
         unique=True,
         verbose_name=_('ID'),
     )
-    is_approved = models.BooleanField(
-        default=False,
-        help_text=_("A boolean indicating if the time record has been "
-                    "approved by the employee's manager."),
-        verbose_name=_('is approved'),
-    )
     time_end = models.DateTimeField(
         blank=True,
         help_text=_('The ending time of the work period.'),
@@ -167,3 +161,61 @@ class TimeRecord(models.Model):
             return f'Time Record from {self.time_start} to {self.time_end}'
 
         return f'Time Record starting at {self.time_start}'
+
+    @property
+    def is_approved(self):
+        """
+        Determine if the time record is approved.
+
+        Returns:
+            A boolean indicating if there is an approval record for the
+            time record.
+        """
+        return hasattr(self, 'approval')
+
+
+class TimeRecordApproval(models.Model):
+    """
+    A record of the approval for a time record.
+    """
+    id = models.UUIDField(
+        default=uuid.uuid4,
+        help_text=_('A unique identifier for the approval record.'),
+        primary_key=True,
+        unique=True,
+        verbose_name=_('ID'),
+    )
+    time_approved = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time that the associated time record was approved.'),
+        verbose_name=_('approval time'),
+    )
+    time_record = models.OneToOneField(
+        'vms.TimeRecord',
+        help_text=_('The time record that is being approved.'),
+        on_delete=models.CASCADE,
+        related_name='approval',
+        verbose_name=_('time record'),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        help_text=_('The user who approved the time record.'),
+        on_delete=models.CASCADE,
+        related_name='time_record_approvals',
+        related_query_name='time_record_approval',
+        verbose_name=_('approving user'),
+    )
+
+    class Meta:
+        ordering = ('time_approved',)
+        verbose_name = _('time record approval')
+        verbose_name_plural = _('time record approvals')
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            A string containing the name of the approved time record.
+        """
+        return f'Approval for {self.time_record}'
