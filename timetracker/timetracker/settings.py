@@ -87,12 +87,34 @@ WSGI_APPLICATION = 'timetracker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# We assume that the provided credentials are for a Postgres DB. If the
+# appropriate credentials are not provided, we fall back to the local
+# sqlite DB.
+
+DB_HOST = os.environ.get('DJANGO_DB_HOST', 'localhost')
+DB_NAME = os.environ.get('DJANGO_DB_NAME')
+DB_PASSWORD = os.environ.get('DJANGO_DB_PASSWORD')
+DB_PORT = os.environ.get('DJANGO_DB_PORT', '5432')
+DB_USER = os.environ.get('DJANGO_DB_USER')
+
+if all((DB_HOST, DB_USER, DB_PASSWORD, DB_PORT)):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': DB_PASSWORD,
+            'HOST': DB_HOST,
+            'PORT': DB_PORT,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation

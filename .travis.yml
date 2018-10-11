@@ -5,9 +5,7 @@ python: 3.6
 cache: pip
 
 install:
-  - pip install --upgrade pip==18.0
-  - pip install pipenv
-  - pipenv install pip==18.0
+  - pip install --upgrade pipenv
   - pipenv install --dev
 
 script: pipenv run flake8
