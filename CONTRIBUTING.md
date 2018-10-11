@@ -28,7 +28,7 @@ cd timetracker-web
 pipenv install --dev
 ```
 
-#### Recommended Setup
+### Recommended Setup
 
 All code is linted, or checked for style, by [flake8](http://flake8.pycqa.org/en/latest/) on every push. To prevent yourself from pushing code with style violations, we recommend setting up the flake8 git hook.
 
