@@ -76,4 +76,4 @@ The directory on the filesystem where the application will store static files. T
 
 ## Development
 
-See [`CONTRIBUTING.md`][CONTRIBUTING.md] for developer documentation.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for developer documentation.
