@@ -28,6 +28,16 @@ cd timetracker-web
 pipenv install --dev
 ```
 
+### Application Settings
+
+For a local developer environment, you should create a `.env` file in the root of your project to enable debug mode.
+
+```dotenv
+DJANGO_DEBUG=True
+```
+
+This file will be read and used to set environment variables when executing commands within the context of `pipenv`.
+
 ### Recommended Setup
 
 All code is linted, or checked for style, by [flake8](http://flake8.pycqa.org/en/latest/) on every push. To prevent yourself from pushing code with style violations, we recommend setting up the flake8 git hook.
@@ -42,6 +52,15 @@ This creates a hook that will lint your changed code before each commit, and rej
 
 ```bash
 pipenv run flake8
+```
+
+## Local Server
+
+To run a server on your local machine, you must create the appropriate database tables and then you can run the development server.
+
+```bash
+pipenv run timetracker/manage.py migrate
+pipenv run timetracker/manage.py runserver
 ```
 
 ## Tests
