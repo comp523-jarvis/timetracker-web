@@ -3,6 +3,17 @@ import pytest
 from django.utils.text import slugify
 
 
+class ClientAdminFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating test client admins.
+    """
+    client = factory.SubFactory('vms.test.conftest.ClientFactory')
+    user = factory.SubFactory('conftest.UserFactory')
+
+    class Meta:
+        model = 'vms.ClientAdmin'
+
+
 class ClientFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating test clients.
@@ -45,6 +56,14 @@ class TimeRecordFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = 'vms.TimeRecord'
+
+
+@pytest.fixture
+def client_admin_factory(db):
+    """
+    Fixture to get the factory used to create client admins.
+    """
+    return ClientAdminFactory
 
 
 @pytest.fixture

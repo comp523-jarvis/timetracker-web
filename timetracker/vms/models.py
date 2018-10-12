@@ -116,6 +116,49 @@ class Client(models.Model):
         return self.name
 
 
+class ClientAdmin(models.Model):
+    """
+    A link between a user and a client that grants the linked user admin
+    permissions on the associated client company.
+    """
+    client = models.ForeignKey(
+        'vms.Client',
+        help_text=_('The client company that the user has admin rights to.'),
+        on_delete=models.CASCADE,
+        related_name='admins',
+        related_query_name='admin',
+        verbose_name=_('client'),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time the admin was created at.'),
+        verbose_name=_('creation time'),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        help_text=_('The user who has admin rights on the linked client.'),
+        on_delete=models.CASCADE,
+        related_name='client_admins',
+        related_query_name='client_admin',
+        verbose_name=_('admin user'),
+    )
+
+    class Meta:
+        ordering = ('client__name', 'time_created')
+        unique_together = ('client', 'user')
+        verbose_name = _('client administrator')
+        verbose_name_plural = _('client administrators')
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            A string containing the names of the linked user and client.
+        """
+        return f'{self.client.name} admin {self.user.name}'
+
+
 class Employee(models.Model):
     """
     An employee working for a specific company.
