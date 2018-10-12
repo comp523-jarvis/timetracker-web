@@ -29,12 +29,25 @@ class EmployeeFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating test employees.
     """
-    company = 'Acme Inc.'
     supervisor = 'John Smith'
+    staffing_agency = factory.SubFactory(
+        'vms.test.conftest.StaffingAgencyFactory',
+    )
     user = factory.SubFactory('conftest.UserFactory')
 
     class Meta:
         model = 'vms.Employee'
+
+
+class StaffingAgencyFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating test staffing agencies.
+    """
+    email = factory.LazyAttribute(lambda o: f'{slugify(o.name)}@example.com')
+    name = factory.Sequence(lambda n: f'Staffing Agency {n}')
+
+    class Meta:
+        model = 'vms.StaffingAgency'
 
 
 class TimeRecordApprovalFactory(factory.DjangoModelFactory):
@@ -80,6 +93,14 @@ def employee_factory(db):
     Fixture to get the factory used to create employees.
     """
     return EmployeeFactory
+
+
+@pytest.fixture
+def staffing_agency_factory(db):
+    """
+    Fixture to get the factory used to create staffing agencies.
+    """
+    return StaffingAgencyFactory
 
 
 @pytest.fixture

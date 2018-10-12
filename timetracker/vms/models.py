@@ -163,11 +163,6 @@ class Employee(models.Model):
     """
     An employee working for a specific company.
     """
-    company = models.CharField(
-        help_text=_('The name of the company the employee works for.'),
-        max_length=100,
-        verbose_name=_('company name'),
-    )
     is_active = models.BooleanField(
         default=True,
         help_text=_('A boolean indicating if this user is currently active. '
@@ -178,6 +173,14 @@ class Employee(models.Model):
         help_text=_("The employee's supervisor."),
         max_length=100,
         verbose_name=_('supervisor'),
+    )
+    staffing_agency = models.ForeignKey(
+        'vms.StaffingAgency',
+        help_text=_('The staffing agency that hired the employee.'),
+        on_delete=models.CASCADE,
+        related_name='employees',
+        related_query_name='employee',
+        verbose_name=_('staffing agency'),
     )
     time_created = models.DateTimeField(
         auto_now_add=True,
@@ -250,6 +253,82 @@ class Employee(models.Model):
             hours += record.time_end - record.time_start
 
         return hours.total_seconds()
+
+
+class StaffingAgency(models.Model):
+    """
+    A company that provides employees to clients.
+    """
+    email = models.EmailField(
+        help_text=_('The primary email address for the agency.'),
+        verbose_name=_('primary email address'),
+    )
+    name = models.CharField(
+        help_text=_('The name of the staffing agency.'),
+        max_length=100,
+        verbose_name=_('name'),
+    )
+    notes = models.TextField(
+        blank=True,
+        help_text=_('Additional information about the staffing agency.'),
+        verbose_name=_('notes'),
+    )
+    phone_number = models.CharField(
+        blank=True,
+        help_text=_('The phone number that the agency can be reached at.'),
+        max_length=30,
+        verbose_name=_('phone number'),
+    )
+    slug = models.SlugField(
+        help_text=_('The URL slug used to look up the staffing agency.'),
+        max_length=settings.SLUG_LENGTH_TOTAL,
+        verbose_name=_('slug'),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time the agency was created.'),
+        verbose_name=_('creation time'),
+    )
+    time_updated = models.DateTimeField(
+        auto_now=True,
+        help_text=_("The last time the agency's information was updated."),
+        verbose_name=_('last update time'),
+    )
+
+    class Meta:
+        ordering = ('name', 'time_created',)
+        verbose_name = _('staffing agency')
+        verbose_name_plural = _('staffing agencies')
+
+    def save(self, *args, **kwargs):
+        """
+        Save the agency, creating a slug if necessary.
+
+        Args:
+            *args:
+                Positional arguments to pass to the original save
+                method.
+            **kwargs:
+                Keyword arguments to pass to the original save method.
+        """
+        # TODO: Fix the race condition here
+
+        # There is a race condition here where the slug is generated and
+        # unique among the current clients, but a new client with the
+        # same slug is saved before we get to the save call below.
+        if not self.slug:
+            self.slug = generate_slug(self.name, Client.objects.all())
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            The agency's name.
+        """
+        return self.name
 
 
 class TimeRecord(models.Model):

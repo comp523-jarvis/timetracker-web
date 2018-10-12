@@ -49,7 +49,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     date_hierarchy = 'time_created'
     fields = (
         'user',
-        'company',
+        'staffing_agency',
         'supervisor',
         'is_active',
         'time_created',
@@ -57,14 +57,43 @@ class EmployeeAdmin(admin.ModelAdmin):
     )
     list_display = (
         'user',
-        'company',
+        'staffing_agency',
         'supervisor',
         'is_active',
         'time_created',
     )
     list_filter = ('is_active',)
     readonly_fields = ('time_created', 'time_updated')
-    search_fields = ('company', 'supervisor', 'user__name',)
+    search_fields = ('staffing_agency__name', 'supervisor', 'user__name')
+
+
+@admin.register(models.StaffingAgency)
+class StaffingAgencyAdmin(admin.ModelAdmin):
+    date_hierarchy = 'time_created'
+    fieldsets = (
+        (
+            None,
+            {
+                'fields': ('name',),
+            },
+        ),
+        (
+            _('Contact Information'),
+            {
+                'fields': ('email', 'phone_number', 'notes'),
+            },
+        ),
+        (
+            _('Detailed Information'),
+            {
+                'classes': ('collapse',),
+                'fields': ('slug', 'time_created', 'time_updated'),
+            },
+        ),
+    )
+    list_display = ('name', 'email', 'time_created', 'time_updated')
+    readonly_fields = ('slug', 'time_created', 'time_updated')
+    search_fields = ('email', 'name')
 
 
 @admin.register(models.TimeRecord)
