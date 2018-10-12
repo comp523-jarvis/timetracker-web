@@ -169,3 +169,25 @@ MEDIA_ROOT = os.environ.get('DJANGO_MEDIA_ROOT', None)
 LOGIN_REDIRECT_URL = 'vms:dashboard'
 LOGIN_URL = 'account:login'
 LOGOUT_REDIRECT_URL = 'home'
+
+
+# Settings for generating slugs.
+
+########################################################################
+#                                WARNING                               #
+########################################################################
+# Do not modify the values here unless strictly necessary. If these    #
+# values are changed, a migration has to be made on the database to    #
+# ensure that the max lengths of the slug fields are correct.          #
+########################################################################
+
+# The number of characters to generate to guarantee uniqueness of the
+# slug.
+SLUG_KEY_LENGTH = 6
+
+# The maximum number of characters to use from the slugified value.
+SLUG_LENGTH = 50
+
+# The complete slug is composed of the slug and slug key, joined by a
+# hyphen.
+SLUG_LENGTH_TOTAL = SLUG_KEY_LENGTH + SLUG_LENGTH + 1

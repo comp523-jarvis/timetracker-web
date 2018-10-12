@@ -1,5 +1,17 @@
 import factory
 import pytest
+from django.utils.text import slugify
+
+
+class ClientFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating test clients.
+    """
+    email = factory.LazyAttribute(lambda o: f'{slugify(o.name)}@example.com')
+    name = factory.Sequence(lambda n: f'Client {n}')
+
+    class Meta:
+        model = 'vms.Client'
 
 
 class EmployeeFactory(factory.django.DjangoModelFactory):
@@ -33,6 +45,14 @@ class TimeRecordFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = 'vms.TimeRecord'
+
+
+@pytest.fixture
+def client_factory(db):
+    """
+    Fixture to get the factory used to create clients.
+    """
+    return ClientFactory
 
 
 @pytest.fixture

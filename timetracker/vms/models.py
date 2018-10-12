@@ -1,10 +1,119 @@
 import datetime
+import logging
 import uuid
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.crypto import get_random_string
+from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+
+
+logger = logging.getLogger(__name__)
+
+
+def generate_slug(value, queryset, slug_dest='slug'):
+    """
+    Generate and save a unique slug for the provided instance.
+
+    Args:
+        value:
+            The value to slugify.
+        queryset:
+            The queryset to search to ensure the generated slug is
+            unique.
+        slug_dest:
+            The name of the attribute on the instance that the slug is
+            saved to.
+    """
+    logger.debug('Generating unique slug for value %s', value)
+
+    base = slugify(value)[:settings.SLUG_LENGTH]
+    suffix = ''
+
+    while queryset.filter(**{slug_dest: f'{base}{suffix}'}).exists():
+        logger.debug('Slug %s%s is not unique', base, suffix)
+
+        suffix = f'-{get_random_string(settings.SLUG_KEY_LENGTH)}'
+
+    return f'{base}{suffix}'
+
+
+class Client(models.Model):
+    """
+    A client is a company that employees perform work for.
+    """
+    email = models.EmailField(
+        help_text=_('The primary email address for the client.'),
+        verbose_name=_('primary email address'),
+    )
+    name = models.CharField(
+        help_text=_('The name of the client company.'),
+        max_length=100,
+        verbose_name=_('name'),
+    )
+    notes = models.TextField(
+        blank=True,
+        help_text=_('Additional information about the client.'),
+        verbose_name=_('notes'),
+    )
+    phone_number = models.CharField(
+        blank=True,
+        help_text=_('The phone number that the client can be reached at.'),
+        max_length=30,
+        verbose_name=_('phone number'),
+    )
+    slug = models.SlugField(
+        help_text=_('The URL slug used to look up the client.'),
+        max_length=settings.SLUG_LENGTH_TOTAL,
+        verbose_name=_('slug'),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time the client was created.'),
+        verbose_name=_('creation time'),
+    )
+    time_updated = models.DateTimeField(
+        auto_now=True,
+        help_text=_("The last time the client's information was updated."),
+        verbose_name=_('last update time'),
+    )
+
+    class Meta:
+        ordering = ('name', 'time_created',)
+        verbose_name = _('client')
+        verbose_name_plural = _('clients')
+
+    def save(self, *args, **kwargs):
+        """
+        Save the client, creating a slug if necessary.
+
+        Args:
+            *args:
+                Positional arguments to pass to the original save
+                method.
+            **kwargs:
+                Keyword arguments to pass to the original save method.
+        """
+        # TODO: Fix the race condition here
+
+        # There is a race condition here where the slug is generated and
+        # unique among the current clients, but a new client with the
+        # same slug is saved before we get to the save call below.
+        if not self.slug:
+            self.slug = generate_slug(self.name, Client.objects.all())
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            The client's name.
+        """
+        return self.name
 
 
 class Employee(models.Model):

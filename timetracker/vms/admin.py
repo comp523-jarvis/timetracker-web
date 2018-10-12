@@ -1,6 +1,36 @@
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
 
 from vms import models
+
+
+@admin.register(models.Client)
+class ClientAdmin(admin.ModelAdmin):
+    date_hierarchy = 'time_created'
+    fieldsets = (
+        (
+            None,
+            {
+                'fields': ('name',),
+            },
+        ),
+        (
+            _('Contact Information'),
+            {
+                'fields': ('email', 'phone_number', 'notes'),
+            },
+        ),
+        (
+            _('Detailed Information'),
+            {
+                'classes': ('collapse',),
+                'fields': ('slug', 'time_created', 'time_updated'),
+            },
+        ),
+    )
+    list_display = ('name', 'email', 'time_created', 'time_updated')
+    readonly_fields = ('slug', 'time_created', 'time_updated')
+    search_fields = ('email', 'name')
 
 
 @admin.register(models.Employee)
