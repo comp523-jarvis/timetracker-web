@@ -1,8 +1,9 @@
 # Timetracker Web
 
 [![Travis (.com)](https://img.shields.io/travis/com/comp523-jarvis/timetracker-web.svg)](https://travis-ci.com/comp523-jarvis/timetracker-web)
+[![Codecov](https://img.shields.io/codecov/c/github/comp523-jarvis/timetracker-web.svg)](https://codecov.io/gh/comp523-jarvis/timetracker-web)
 
-Web app and API for Ulimi time tracker
+Web app and API for Ulimi time tracker.
 
 ## Deployment
 

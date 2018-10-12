@@ -1,0 +1,9 @@
+[run]
+branch = True
+omit = \
+       */tests/*,
+       timetracker/manage.py,
+       timetracker/timetracker/wsgi.py,
+       */migrations/*,
+       */admin.py
+source = timetracker

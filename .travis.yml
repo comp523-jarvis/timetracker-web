@@ -14,7 +14,9 @@ install:
 
 script:
   - pipenv run flake8
-  - pipenv run pytest timetracker/
+  - pipenv run coverage run -m pytest timetracker/
+
+after_success: pipenv run codecov
 
 notifications:
   email:

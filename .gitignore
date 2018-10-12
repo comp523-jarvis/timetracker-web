@@ -36,3 +36,6 @@ db.sqlite3
 
 # Local Settings
 .env
+
+# Coverage Reports
+.coverage
