@@ -159,6 +159,54 @@ class ClientAdmin(models.Model):
         return f'{self.client.name} admin {self.user.name}'
 
 
+class ClientJob(models.Model):
+    """
+    A type of task that can be worked on for a specific client.
+    """
+    client = models.ForeignKey(
+        'vms.Client',
+        help_text=_('The client that the job is performed for.'),
+        on_delete=models.CASCADE,
+        related_name='jobs',
+        related_query_name='job',
+        verbose_name=_('client'),
+    )
+    description = models.TextField(
+        blank=True,
+        help_text=_('More details about the job.'),
+        verbose_name=_('description'),
+    )
+    name = models.CharField(
+        help_text=_('The name of the job'),
+        max_length=100,
+        verbose_name=_('name'),
+    )
+    pay_rate = models.DecimalField(
+        decimal_places=2,
+        max_digits=11,
+    )
+    slug = models.SlugField(
+        help_text=_('A unique slug that can be used to retrieve the job.'),
+        max_length=100,
+        verbose_name=_('slug'),
+    )
+
+    class Meta:
+        ordering = ('name',)
+        unique_together = ('client', 'slug')
+        verbose_name = _('client job')
+        verbose_name_plural = _('client jobs')
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            The job name.
+        """
+        return self.name
+
+
 class Employee(models.Model):
     """
     An employee working for a specific company.
@@ -169,9 +217,15 @@ class Employee(models.Model):
                     'Inactive employees log any working hours.'),
         verbose_name=_('is active'),
     )
-    supervisor = models.CharField(
-        help_text=_("The employee's supervisor."),
-        max_length=100,
+    supervisor = models.ForeignKey(
+        'vms.ClientAdmin',
+        help_text=_(
+            "The client administrator who can approve the user's hours.",
+        ),
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='employees',
+        related_query_name='employee',
         verbose_name=_('supervisor'),
     )
     staffing_agency = models.ForeignKey(
@@ -318,6 +372,49 @@ class StaffingAgency(models.Model):
         return self.name
 
 
+class StaffingAgencyAdmin(models.Model):
+    """
+    A link between a user and a staffing agency that grants the linked
+    user admin permissions on the associated staffing agency.
+    """
+    agency = models.ForeignKey(
+        'vms.StaffingAgency',
+        help_text=_('The staffing agency that the user has admin rights to.'),
+        on_delete=models.CASCADE,
+        related_name='admins',
+        related_query_name='admin',
+        verbose_name=_('staffing agency'),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time the admin was created at.'),
+        verbose_name=_('creation time'),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        help_text=_('The user who has admin rights on the linked agency.'),
+        on_delete=models.CASCADE,
+        related_name='agency_admins',
+        related_query_name='agency_admin',
+        verbose_name=_('admin user'),
+    )
+
+    class Meta:
+        ordering = ('agency__name', 'user__name', 'time_created')
+        unique_together = ('agency', 'user')
+        verbose_name = _('staffing agency administrator')
+        verbose_name_plural = _('staffing agency administrators')
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            A string containing the names of the linked user and agency.
+        """
+        return f'{self.agency.name} admin {self.user.name}'
+
+
 class TimeRecord(models.Model):
     """
     A record marking a work period for an employee.
@@ -336,6 +433,15 @@ class TimeRecord(models.Model):
         primary_key=True,
         unique=True,
         verbose_name=_('ID'),
+    )
+    job = models.ForeignKey(
+        'vms.ClientJob',
+        help_text=_('The job type that the employee worked on.'),
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='time_records',
+        related_query_name='time_record',
+        verbose_name=_('client job'),
     )
     time_end = models.DateTimeField(
         blank=True,

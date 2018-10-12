@@ -25,11 +25,23 @@ class ClientFactory(factory.django.DjangoModelFactory):
         model = 'vms.Client'
 
 
+class ClientJobFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating test client jobs.
+    """
+    client = factory.SubFactory('vms.test.conftest.ClientFactory')
+    name = factory.Sequence(lambda n: f'Job {n}')
+    pay_rate = 15
+
+    class Meta:
+        model = 'vms.ClientJob'
+
+
 class EmployeeFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating test employees.
     """
-    supervisor = 'John Smith'
+    supervisor = factory.SubFactory('vms.test.conftest.ClientAdminFactory')
     staffing_agency = factory.SubFactory(
         'vms.test.conftest.StaffingAgencyFactory',
     )
@@ -37,6 +49,17 @@ class EmployeeFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = 'vms.Employee'
+
+
+class StaffingAgencyAdminFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating test staffing agency admins.
+    """
+    agency = factory.SubFactory('vms.test.conftest.StaffingAgencyFactory')
+    user = factory.SubFactory('conftest.UserFactory')
+
+    class Meta:
+        model = 'vms.StaffingAgencyAdmin'
 
 
 class StaffingAgencyFactory(factory.django.DjangoModelFactory):
@@ -88,11 +111,27 @@ def client_factory(db):
 
 
 @pytest.fixture
+def client_job_factory(db):
+    """
+    Fixture to get the factory used to create client jobs.
+    """
+    return ClientJobFactory
+
+
+@pytest.fixture
 def employee_factory(db):
     """
     Fixture to get the factory used to create employees.
     """
     return EmployeeFactory
+
+
+@pytest.fixture
+def staffing_agency_admin_factory(db):
+    """
+    Fixture to get the factory used to create staffing agency admins.
+    """
+    return StaffingAgencyAdminFactory
 
 
 @pytest.fixture
