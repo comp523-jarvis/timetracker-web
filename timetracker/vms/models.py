@@ -206,19 +206,6 @@ class Employee(models.Model):
         verbose_name = _('employee')
         verbose_name_plural = _('employees')
 
-    def __repr__(self):
-        """
-        Get a string representation of the employee.
-
-        Returns:
-            A string containing the information required to reconstruct
-            the employee.
-        """
-        return (
-            f'Employee(id={self.id:r}, user_id={self.user.id:r}, '
-            f'company={self.company:r}, supervisor={self.supervisor:r})'
-        )
-
     def __str__(self):
         """
         Get a user readable string describing the instance.
@@ -227,7 +214,7 @@ class Employee(models.Model):
             A string containing the name of the user who owns the
             employee instance.
         """
-        return f'{self.user.name} ({self.company})'
+        return f'{self.user.name} (Hired by {self.staffing_agency})'
 
     @property
     def is_clocked_in(self):
