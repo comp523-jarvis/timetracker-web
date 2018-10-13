@@ -469,8 +469,12 @@ class TimeRecord(models.Model):
             the time record.
         """
         return (
-            f'TimeRecord(id={self.id:r}, employee_id={self.employee.id:r}, '
-            f'time_start={self.time_start:r}, time_end={self.time_end:r})'
+            f'TimeRecord('
+            f'id={self.id!r}, '
+            f'job_id={self.job.id if self.job else None!r}, '
+            f'employee_id={self.employee.id!r}, '
+            f'time_start={self.time_start!r}, '
+            f'time_end={self.time_end!r})'
         )
 
     def __str__(self):

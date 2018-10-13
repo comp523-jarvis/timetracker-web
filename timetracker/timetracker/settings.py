@@ -191,3 +191,34 @@ SLUG_LENGTH = 50
 # The complete slug is composed of the slug and slug key, joined by a
 # hyphen.
 SLUG_LENGTH_TOTAL = SLUG_KEY_LENGTH + SLUG_LENGTH + 1
+
+
+# Logging Configuration
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        # Root logger
+        '': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+        # App specific loggers
+        'account': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'vms': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

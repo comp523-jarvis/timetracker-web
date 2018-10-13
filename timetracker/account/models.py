@@ -86,7 +86,16 @@ class User(PermissionsMixin, AbstractBaseUser):
             A string containing the information required to reconstruct
             the user.
         """
-        return f'User(id={self.id:r}, username={self.username:r})'
+        return (
+            f'User('
+            f'id={self.id!r}, '
+            f'is_active={self.is_active}, '
+            f'is_staff={self.is_staff}, '
+            f'is_superuser={self.is_superuser}, '
+            f'name={self.name!r}, '
+            f'timezone={self.timezone!r}, '
+            f'username={self.username!r})'
+        )
 
     def __str__(self):
         """

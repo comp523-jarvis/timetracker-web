@@ -89,6 +89,7 @@ class TimeRecordFactory(factory.django.DjangoModelFactory):
     Factory for generating test time records.
     """
     employee = factory.SubFactory('vms.test.conftest.EmployeeFactory')
+    job = factory.SubFactory('vms.test.conftest.ClientJobFactory')
 
     class Meta:
         model = 'vms.TimeRecord'
