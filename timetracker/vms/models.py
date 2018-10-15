@@ -485,10 +485,20 @@ class TimeRecord(models.Model):
             A string describing the time record including the start and
             end times.
         """
+        st = self.time_start
         if self.time_end:
-            return f'Time Record from {self.time_start} to {self.time_end}'
-
-        return f'Time Record starting at {self.time_start}'
+            et = self.time_end
+            if self.time_start.date() == self.time_end.date():
+                return (
+                    f'Time Record from {st:%I:%M %p} to '
+                    f'{et:%I:%M %p} on {st:%m/%d/%Y}.'
+                )
+            else:
+                return (
+                    f'Time Record from {st:%I:%M %p on %m/%d/%Y}, '
+                    f'{et:%I:%M %p on %m/%d/%Y}.'
+                )
+        return f'Time Record starting at {st:%I:%M %p} on {st:%m/%d/%Y}.'
 
     @property
     def is_approved(self):

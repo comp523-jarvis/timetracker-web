@@ -1,3 +1,6 @@
+import datetime
+
+
 def test_is_approved_no_approval(time_record_factory):
     """
     If there is no approval record for the time record, the property
@@ -53,3 +56,40 @@ def test_repr_without_job(time_record_factory):
     )
 
     assert repr(record) == expected
+
+
+def test_1_time_string_conversion(time_record_factory):
+    """
+    Case with no end time
+    """
+    t = time_record_factory()
+    expected = (
+        f'Time Record starting at {t.time_start:%I:%M %p}'
+        f' on {t.time_start:%m/%d/%Y}.'
+    )
+    assert str(t) == expected
+
+
+def test_2_time_string_conversion(time_record_factory):
+    """
+    Case with different end times
+    """
+    t = time_record_factory(time_end=datetime.datetime(2020, 10, 1, 15, 26))
+    expected = (
+        f'Time Record from {t.time_start:%I:%M %p on %m/%d/%Y}, '
+        f'{t.time_end:%I:%M %p on %m/%d/%Y}.'
+    )
+    assert str(t) == expected
+
+
+def test_3_time_string_conversion(time_record_factory):
+    """
+    Case with same end times
+    """
+    d = datetime.datetime(2018, 10, 1, 15, 26)
+    t = time_record_factory(time_start=d, time_end=d)
+    expected = (
+        f'Time Record from {t.time_start:%I:%M %p} to '
+        f'{t.time_end:%I:%M %p} on {t.time_start:%m/%d/%Y}.'
+    )
+    assert str(t) == expected
