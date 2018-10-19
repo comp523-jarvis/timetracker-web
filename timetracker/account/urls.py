@@ -1,6 +1,5 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
-
 from account import views
 
 
@@ -22,4 +21,11 @@ urlpatterns = [
         views.ProfileView.as_view(),
         name='profile',
     ),
+    path(
+        'signup/',
+        views.SignUpView.as_view(),
+        name='signup',
+        ),
+
+
 ]
