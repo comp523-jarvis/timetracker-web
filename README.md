@@ -5,6 +5,24 @@
 
 Web app and API for Ulimi time tracker.
 
+<!-- toc -->
+
+- [Deployment](#deployment)
+  * [Environment Variables](#environment-variables)
+    + [`DJANGO_ALLOWED_HOSTS`](#django_allowed_hosts)
+    + [`DJANGO_DB_HOST`](#django_db_host)
+    + [`DJANGO_DB_NAME`](#django_db_name)
+    + [`DJANGO_DB_PASSWORD`](#django_db_password)
+    + [`DJANGO_DB_PORT`](#django_db_port)
+    + [`DJANGO_DB_USER`](#django_db_user)
+    + [`DJANGO_DEBUG`](#django_debug)
+    + [`DJANGO_MEDIA_ROOT`](#django_media_root)
+    + [`DJANGO_SECRET_KEY`](#django_secret_key)
+    + [`DJANGO_STATIC_ROOT`](#django_static_root)
+- [Development](#development)
+
+<!-- tocstop -->
+
 ## Deployment
 
 See [the deployment repository](https://github.com/comp523-jarvis/timetracker-web-deployment) for an example of how to deploy the application.

@@ -1,5 +1,23 @@
 # Contributing
 
+<!-- toc -->
+
+- [Environment Setup](#environment-setup)
+  * [Requirements](#requirements)
+  * [Code and Dependencies](#code-and-dependencies)
+  * [Application Settings](#application-settings)
+  * [Recommended Setup](#recommended-setup)
+- [Local Server](#local-server)
+- [Tests](#tests)
+- [Git Workflow](#git-workflow)
+  * [Updating the Codebase](#updating-the-codebase)
+    + [Dependency Changes](#dependency-changes)
+    + [Migration Changes](#migration-changes)
+  * [Pull Requests](#pull-requests)
+    + [Updating a Feature Branch](#updating-a-feature-branch)
+
+<!-- tocstop -->
+
 ## Environment Setup
 
 ### Requirements
@@ -69,4 +87,51 @@ Tests are run using [pytest](https://docs.pytest.org/en/latest/). These tests ar
 
 ```bash
 pipenv run pytest timetracker/
+```
+
+## Git Workflow
+
+Work should be done on short lived "feature branches". These branches should branch off of the most recent version of `master`, and then be merged back in to `master`, usually as a single commit.
+
+### Updating the Codebase
+
+There are frequent updates to the repository, so you should be updating your local copy often. To do so, simply run `git pull`.
+
+#### Dependency Changes
+
+If you get an error related to a module not being found, you may have to install additional dependencies. Simply run the install command again:
+
+```bash
+pipenv install --dev
+```
+
+#### Migration Changes
+
+If the changes you pull in have additional database migrations, you will have to migrate your local database again.
+
+```bash
+pipenv run timetracker/manage.py migrate
+```
+
+*Note: Occasionally backwards incompatible changes to the migrations will happen. In this case, you will have to delete the `timetracker/db.sqlite3` file and run the migrations again. This should be a rare occurrence.*
+
+### Pull Requests
+
+Once you have the basic concept of your change made, you should push your branch to GitHub and open a pull request. This will run our automated testing suite, provide information on test coverage, and more importantly, allow for others to provide feedback on your work. All changes must have at least one approving review before being merged.
+
+#### Updating a Feature Branch
+
+Since there are multiple people working on the project, chances are your feature branch will fall behind the most recent master version. To fix this, you can update your local copy of the master branch and then rebase your feature branch on top of it.
+
+```bash
+git checkout master
+git pull
+git checkout <your-feature-branch>
+git rebase master
+```
+
+If you rebase a feature branch you have already pushed, you will have to force push it the next time you want to push.
+
+```bash
+git push --force
 ```
