@@ -1,0 +1,14 @@
+{# Override the default template to improve handling of single error messages. #}
+
+{% if form.non_field_errors %}
+  <div class="alert alert-block alert-danger">
+    {% if form_error_title %}<h4 class="alert-heading">{{ form_error_title }}</h4>{% endif %}
+    {% if form.non_field_errors|length_is:"1" %}
+      {{ form.non_field_errors.0 }}
+    {% else %}
+      <ul>
+        {{ form.non_field_errors|unordered_list }}
+      </ul>
+    {% endif %}
+  </div>
+{% endif %}

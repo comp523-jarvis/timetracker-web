@@ -40,6 +40,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    # Django Apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +48,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Third Party Apps
+    'crispy_forms',
+
+    # Custom Apps
     'account',
     'core',
     'vms',
@@ -194,6 +199,11 @@ SLUG_LENGTH = 50
 # The complete slug is composed of the slug and slug key, joined by a
 # hyphen.
 SLUG_LENGTH_TOTAL = SLUG_KEY_LENGTH + SLUG_LENGTH + 1
+
+
+# Crispy Forms
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
 # Logging Configuration
