@@ -1,5 +1,20 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h1>Ulimi Time Tracker</h1>
+{% load static %}
+
+
+{% block main %}
+  <div class="d-flex flex-column justify-content-around hero" style="background-image: url('{% static 'images/hero-background.jpg' %}');">
+    <div class="container my-5">
+      <div class="jumbotron jumbotron--hero">
+        <h1 class="display-4">Ulimi Time Tracker</h1>
+        <p class="lead">Enterprise-grade time tracking software for temporary hires and staffing agencies.</p>
+        <hr class="my-4">
+        <p>
+          Manage time records, client companies, and staffing agencies from your dashboard.
+        </p>
+        <a class="btn btn-lg btn-primary" href="{% url 'vms:dashboard' %}">My Dashboard</a>
+      </div>
+    </div>
+  </div>
 {% endblock %}

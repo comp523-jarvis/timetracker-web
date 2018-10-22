@@ -7,3 +7,13 @@ body {
 main {
     flex: 1;
 }
+
+.hero {
+  background-size: cover;
+  background-position: center;
+  min-height: 80vh;
+}
+
+.jumbotron--hero {
+  background: rgba(233, 236, 239, .9);
+}
