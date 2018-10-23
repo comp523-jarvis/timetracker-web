@@ -201,6 +201,18 @@ SLUG_LENGTH = 50
 SLUG_LENGTH_TOTAL = SLUG_KEY_LENGTH + SLUG_LENGTH + 1
 
 
+# ID Length Configuration
+
+# Length of an individual employee's ID. Employee IDs are unique to the
+# client company they work for. This means that the number of employees
+# per company is limited to:
+#     10^n - 10^(n-1)
+# Realistically we will struggle to generate unique IDs before we reach
+# that number. With 1,000 attempts, we can get to ~99.5% capacity before
+# there is a 1% chance of failure.
+EMPLOYEE_ID_LENGTH = 5
+
+
 # Crispy Forms
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

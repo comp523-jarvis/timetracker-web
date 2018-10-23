@@ -3,11 +3,14 @@ import logging
 import uuid
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+
+from vms import id_utils
 
 
 logger = logging.getLogger(__name__)
@@ -211,10 +214,21 @@ class Employee(models.Model):
     """
     An employee working for a specific company.
     """
+    employee_id = models.PositiveIntegerField(
+        blank=True,
+        db_index=True,
+        help_text=_(
+            'A unique number identifying the employee within the client '
+            'company they work for.'
+        ),
+        verbose_name=_('employee ID'),
+    )
     is_active = models.BooleanField(
         default=True,
-        help_text=_('A boolean indicating if this user is currently active. '
-                    'Inactive employees log any working hours.'),
+        help_text=_(
+            'A boolean indicating if this user is currently active. Inactive '
+            'employees cannot log any working hours.'
+        ),
         verbose_name=_('is active'),
     )
     supervisor = models.ForeignKey(
@@ -294,6 +308,49 @@ class Employee(models.Model):
             hours += record.time_end - record.time_start
 
         return hours.total_seconds()
+
+    def save(self, *args, **kwargs):
+        """
+        Save the employee and generate an ID for them if necessary.
+        """
+        if not self.employee_id:
+            query = self.__class__.objects.filter(
+                supervisor__client=self.supervisor.client,
+            )
+            self.employee_id = id_utils.generate_unique_id(
+                settings.EMPLOYEE_ID_LENGTH,
+                query,
+                queryset_attr='employee_id',
+            )
+
+        super().save(*args, **kwargs)
+
+    def validate_unique(self, exclude=None):
+        """
+        Validate that the employee's ID is unique to the company they
+        work for.
+
+        Args:
+            exclude:
+                An optional list of field names to exclude from the
+                check.
+        """
+        super().validate_unique(exclude)
+
+        if exclude is not None and 'employee_id' in exclude:
+            return
+
+        queryset = self.__class__.objects.filter(
+            employee_id=self.employee_id,
+            supervisor__client=self.supervisor.client,
+        )
+        if self.id:
+            queryset = queryset.exclude(id=self.id)
+
+        if queryset.exists():
+            raise ValidationError(
+                'Employee IDs must be unique within a client company.',
+            )
 
 
 class StaffingAgency(models.Model):

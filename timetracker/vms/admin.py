@@ -59,12 +59,14 @@ class EmployeeAdmin(admin.ModelAdmin):
     fields = (
         'user',
         'staffing_agency',
+        'employee_id',
         'supervisor',
         'is_active',
         'time_created',
         'time_updated',
     )
     list_display = (
+        'employee_id',
         'user',
         'client',
         'staffing_agency',
@@ -76,6 +78,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     readonly_fields = ('time_created', 'time_updated')
     search_fields = (
         'staffing_agency__name',
+        'supervisor__client__name',
         'supervisor__user__name',
         'user__name',
     )
