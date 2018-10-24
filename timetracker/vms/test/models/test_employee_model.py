@@ -1,7 +1,42 @@
 import pytest
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 
 from vms import models
+
+
+def test_clock_in_url(employee_factory):
+    """
+    This property should return the URL of the view used to clock in an
+    employee.
+    """
+    employee = employee_factory()
+    expected = reverse(
+        'vms:clock-in',
+        kwargs={
+            'client_slug': employee.supervisor.client.slug,
+            'employee_id': employee.employee_id,
+        },
+    )
+
+    assert employee.clock_in_url == expected
+
+
+def test_clock_out_url(employee_factory):
+    """
+    This property should return the URL of the view used to clock out an
+    employee.
+    """
+    employee = employee_factory()
+    expected = reverse(
+        'vms:clock-out',
+        kwargs={
+            'client_slug': employee.supervisor.client.slug,
+            'employee_id': employee.employee_id,
+        },
+    )
+
+    assert employee.clock_out_url == expected
 
 
 def test_save_new_employee(

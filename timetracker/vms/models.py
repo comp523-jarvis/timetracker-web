@@ -5,6 +5,7 @@ import uuid
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.text import slugify
@@ -336,6 +337,34 @@ class Employee(models.Model):
             employee instance.
         """
         return f'{self.user.name} (Hired by {self.staffing_agency})'
+
+    @property
+    def clock_in_url(self):
+        """
+        Returns:
+            The absolute URL of the view used to clock in the employee.
+        """
+        return reverse(
+            'vms:clock-in',
+            kwargs={
+                'client_slug': self.supervisor.client.slug,
+                'employee_id': self.employee_id,
+            },
+        )
+
+    @property
+    def clock_out_url(self):
+        """
+        Returns:
+            The absolute URL of the view used to clock out the employee.
+        """
+        return reverse(
+            'vms:clock-out',
+            kwargs={
+                'client_slug': self.supervisor.client.slug,
+                'employee_id': self.employee_id,
+            },
+        )
 
     @property
     def is_clocked_in(self):

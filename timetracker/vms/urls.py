@@ -1,11 +1,12 @@
-from django.urls import path
+from django.urls import include, path
 
 from vms import views
 
 
 app_name = 'vms'
 
-urlpatterns = [
+
+client_detail_urls = [
     path(
         'employees/<int:employee_id>/clock-in/',
         views.ClockInView.as_view(),
@@ -15,6 +16,14 @@ urlpatterns = [
         'employees/<int:employee_id>/clock-out/',
         views.ClockOutView.as_view(),
         name='clock-out',
+    ),
+]
+
+
+urlpatterns = [
+    path(
+        'clients/<slug:client_slug>/',
+        include(client_detail_urls)
     ),
     path(
         'dashboard/',
