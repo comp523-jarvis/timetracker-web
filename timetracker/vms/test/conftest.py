@@ -36,6 +36,15 @@ class ClientJobFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'vms.ClientJob'
 
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        model = super()._create(model_class, *args, **kwargs)
+
+        model.clean()
+        model.save()
+
+        return model
+
 
 class EmployeeFactory(factory.django.DjangoModelFactory):
     """

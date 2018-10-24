@@ -8,7 +8,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext
 
 from vms import id_utils
 
@@ -208,6 +208,55 @@ class ClientJob(models.Model):
             The job name.
         """
         return self.name
+
+    def clean(self):
+        """
+        Generate a slug for the instance if necessary.
+        """
+        super().clean()
+
+        if not self.slug:
+            self.slug = slugify(self.name)
+
+    def clean_fields(self, exclude=None):
+        """
+        Ensure the name of the instance is not too similar to other jobs
+        owned by the same client.
+
+        Args:
+            exclude:
+                An optional list of fields to exclude from validation.
+                Defaults to ``None``.
+        """
+        super().clean_fields(exclude)
+
+        if exclude is not None and 'name' in exclude:
+            return
+
+        slug = slugify(self.name)
+        queryset = self.__class__.objects.filter(
+            client=self.client,
+            slug=slug,
+        ).exclude(id=self.id)
+
+        if queryset.exists():
+            other = queryset.get()
+
+            logger.info(
+                'Client job %r failed unique validation for client %r',
+                self,
+                self.client,
+            )
+
+            message = ugettext(
+                "The name '%(name)s' is too similar to the name of the "
+                "existing job '%(existing_name)s'."
+            ) % {
+                'existing_name': other.name,
+                'name': self.name,
+            }
+
+            raise ValidationError({'name': message})
 
 
 class Employee(models.Model):

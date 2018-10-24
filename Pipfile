@@ -14,7 +14,6 @@ ipython = "*"
 pytest = "*"
 pytest-django = "*"
 factory-boy = "*"
-pipenv = "*"
 codecov = "*"
 coverage = "*"
 
