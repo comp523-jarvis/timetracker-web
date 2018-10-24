@@ -1,6 +1,7 @@
 import factory
 import pytest
 from django.conf import settings
+from django.test import RequestFactory
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -20,6 +21,14 @@ class UserFactory(factory.django.DjangoModelFactory):
         manager = cls._get_manager(model_class)
 
         return manager.create_user(*args, **kwargs)
+
+
+@pytest.fixture
+def request_factory() -> RequestFactory:
+    """
+    Get a factory used to generate test requests.
+    """
+    return RequestFactory()
 
 
 @pytest.fixture

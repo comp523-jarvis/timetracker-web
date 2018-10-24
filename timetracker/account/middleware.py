@@ -27,6 +27,10 @@ class TimezoneMiddleware:
         """
         tz = request.session.get('django_timezone', None)
 
+        if tz is None and request.user.is_authenticated:
+            tz = request.user.timezone
+            request.session['django_timezone'] = tz
+
         if tz:
             try:
                 timezone.activate(tz)
