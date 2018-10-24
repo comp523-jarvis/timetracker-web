@@ -9,13 +9,18 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <link rel="icon" href="{% static 'images/icon.png' %}">
   </head>
 
   <body>
     <header>
       <nav class="navbar navbar-expand-md navbar-light bg-light">
         <div class="container">
-          <a class="navbar-brand" href="{% url 'home' %}">Ulimi</a>
+          <a class="navbar-brand" href="{% url 'home' %}">
+            <img alt="Ulimi Icon" class="d-inline-block align-top" height="30" src="{% static 'images/icon.png' %}" width="30">
+            Ulimi
+          </a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
