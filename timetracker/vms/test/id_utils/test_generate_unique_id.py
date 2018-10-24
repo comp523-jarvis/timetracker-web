@@ -1,6 +1,7 @@
 from unittest import mock
 
 import pytest
+from django.conf import settings
 
 from vms import id_utils
 
@@ -47,4 +48,4 @@ def test_generate_id_fail(mock_gen_numeric):
     with pytest.raises(RuntimeError):
         id_utils.generate_unique_id(3, queryset)
 
-    assert mock_gen_numeric.call_count == 1000
+    assert mock_gen_numeric.call_count == settings.ID_GENERATION_ATTEMPTS_FAIL

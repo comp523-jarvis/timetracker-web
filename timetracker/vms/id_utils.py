@@ -1,6 +1,8 @@
 import logging
 import secrets
 
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -57,17 +59,17 @@ def generate_unique_id(digits, queryset, queryset_attr='id'):
 
     attempts = 1
     while queryset.filter(**{queryset_attr: value}).exists():
-        if attempts == 10:
+        if attempts == settings.ID_GENERATION_ATTEMPTS_NOTICE:
             logger.info(
                 'Taking more than 10 attempts to generate unique ID for %s',
                 queryset,
             )
-        elif attempts == 100:
+        elif attempts == settings.ID_GENERATION_ATTEMPTS_WARNING:
             logger.warning(
                 'Taking more than 100 attempts to generate unique ID for %s',
                 queryset,
             )
-        elif attempts == 1000:
+        elif attempts == settings.ID_GENERATION_ATTEMPTS_FAIL:
             logger.error(
                 'Bailing after 1000 attempts to generate a unique ID for %s.',
                 queryset,

@@ -11,7 +11,7 @@ class ClientAdmin(admin.ModelAdmin):
         (
             None,
             {
-                'fields': ('name',),
+                'fields': ('name', 'id'),
             },
         ),
         (
@@ -28,7 +28,7 @@ class ClientAdmin(admin.ModelAdmin):
             },
         ),
     )
-    list_display = ('name', 'email', 'time_created', 'time_updated')
+    list_display = ('name', 'id', 'email', 'time_created', 'time_updated')
     readonly_fields = ('slug', 'time_created', 'time_updated')
     search_fields = ('email', 'name')
 

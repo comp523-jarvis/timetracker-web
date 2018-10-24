@@ -201,15 +201,30 @@ SLUG_LENGTH = 50
 SLUG_LENGTH_TOTAL = SLUG_KEY_LENGTH + SLUG_LENGTH + 1
 
 
-# ID Length Configuration
+# ID Generation Configuration
 
-# Length of an individual employee's ID. Employee IDs are unique to the
-# client company they work for. This means that the number of employees
-# per company is limited to:
-#     10^n - 10^(n-1)
-# Realistically we will struggle to generate unique IDs before we reach
-# that number. With 1,000 attempts, we can get to ~99.5% capacity before
-# there is a 1% chance of failure.
+########################################################################
+#                                 NOTE                                 #
+########################################################################
+# Since ID generation is a random process, there is a chance of        #
+# failure as we approach the maximum capacity. Given an ID of length   #
+# 'n', the capacity is defined as:                                     #
+#     10^n - 10^(n-1)                                                  #
+#                                                                      #
+# The chance that we fail to generate an ID is entirely dependent on   #
+# the maximum number of attempts. With 1,000 attempts, we can get to   #
+# ~99.5% capacity before there is a 1% chance of failing to generate   #
+# an ID.                                                               #
+########################################################################
+
+# Number of generation attempts before logging a notice
+ID_GENERATION_ATTEMPTS_NOTICE = 10
+# Number of generation attempts before logging a warning
+ID_GENERATION_ATTEMPTS_WARNING = 100
+# Number of generation attempts before failing
+ID_GENERATION_ATTEMPTS_FAIL = 1000
+
+CLIENT_ID_LENGTH = 5
 EMPLOYEE_ID_LENGTH = 5
 
 

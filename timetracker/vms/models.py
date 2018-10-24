@@ -47,6 +47,16 @@ class Client(models.Model):
     """
     A client is a company that employees perform work for.
     """
+    id = models.PositiveIntegerField(
+        blank=True,
+        help_text=_(
+            'A unique numeric identifier for the client. If not specified, it '
+            'will be randomly generated.'
+        ),
+        primary_key=True,
+        unique=True,
+        verbose_name=_('client ID'),
+    )
     email = models.EmailField(
         help_text=_('The primary email address for the client.'),
         verbose_name=_('primary email address'),
@@ -88,27 +98,6 @@ class Client(models.Model):
         verbose_name = _('client')
         verbose_name_plural = _('clients')
 
-    def save(self, *args, **kwargs):
-        """
-        Save the client, creating a slug if necessary.
-
-        Args:
-            *args:
-                Positional arguments to pass to the original save
-                method.
-            **kwargs:
-                Keyword arguments to pass to the original save method.
-        """
-        # TODO: Fix the race condition here
-
-        # There is a race condition here where the slug is generated and
-        # unique among the current clients, but a new client with the
-        # same slug is saved before we get to the save call below.
-        if not self.slug:
-            self.slug = generate_slug(self.name, Client.objects.all())
-
-        super().save(*args, **kwargs)
-
     def __str__(self):
         """
         Get a user readable string describing the instance.
@@ -117,6 +106,21 @@ class Client(models.Model):
             The client's name.
         """
         return self.name
+
+    def clean(self):
+        """
+        Generate a unique ID and slug if necessary.
+        """
+        super().clean()
+
+        if not self.id:
+            self.id = id_utils.generate_unique_id(
+                settings.CLIENT_ID_LENGTH,
+                self.__class__.objects.all(),
+            )
+
+        if not self.slug:
+            self.slug = generate_slug(self.name, self.__class__.objects.all())
 
 
 class ClientAdmin(models.Model):

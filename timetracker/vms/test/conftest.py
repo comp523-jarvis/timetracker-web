@@ -24,6 +24,14 @@ class ClientFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'vms.Client'
 
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        model = model_class(*args, **kwargs)
+        model.clean()
+        model.save()
+
+        return model
+
 
 class ClientJobFactory(factory.django.DjangoModelFactory):
     """
