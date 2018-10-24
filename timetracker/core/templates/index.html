@@ -4,7 +4,7 @@
 
 
 {% block main %}
-  <div class="d-flex flex-column justify-content-around hero" style="background-image: url('{% static 'images/hero-background.jpg' %}');">
+  <section class="d-flex flex-column justify-content-around hero" style="background-image: url('{% static 'images/hero-background.jpg' %}');">
     <div class="container my-5">
       <div class="jumbotron jumbotron--hero">
         <h1 class="display-4">Ulimi Time Tracker</h1>
@@ -16,5 +16,41 @@
         <a class="btn btn-lg btn-primary" href="{% url 'vms:dashboard' %}">My Dashboard</a>
       </div>
     </div>
-  </div>
+  </section>
+
+  <section class="container my-5">
+    <h2 class="text-center border-bottom pb-1 mb-5">Ulimi is for&hellip;</h2>
+    <div class="row">
+      <div class="col-md-12 col-lg-4 mb-3 mb-lg-0">
+        <div class="card">
+          <h3 class="card-header h4">Employers</h3>
+          <div class="card-body">
+            <p class="card-text">
+              Employers hiring through staffing agencies use Ulimi to track and manage employee hours.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 col-lg-4 mb-3 mb-lg-0">
+        <div class="card">
+          <h3 class="card-header h4">Staffing Agencies</h3>
+          <div class="card-body">
+            <p class="card-text">
+              Staffing agencies track employee performance and deliver payroll through Ulimi.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 col-lg-4 mb-3 mb-lg-0">
+        <div class="card">
+          <h3 class="card-header h4">Employees</h3>
+          <div class="card-body">
+            <p class="card-text">
+              Employees use Ulimi to log their hours and manage their relationships with employers and staffing agencies.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock %}
