@@ -29,7 +29,7 @@ class ClientAdmin(admin.ModelAdmin):
         ),
     )
     list_display = ('name', 'id', 'email', 'time_created', 'time_updated')
-    readonly_fields = ('slug', 'time_created', 'time_updated')
+    readonly_fields = ('id', 'slug', 'time_created', 'time_updated')
     search_fields = ('email', 'name')
 
 

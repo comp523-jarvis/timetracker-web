@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='client',
             name='id',
-            field=models.PositiveIntegerField(blank=True, help_text='A unique numeric identifier for the client. If not specified, it will be randomly generated.', primary_key=True, serialize=False, unique=True, verbose_name='client ID'),
+            field=models.PositiveIntegerField(blank=True, editable=False, help_text='A unique numeric identifier for the client. If not specified, it will be randomly generated.', primary_key=True, serialize=False, unique=True, verbose_name='client ID'),
         ),
     ]

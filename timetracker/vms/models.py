@@ -50,6 +50,7 @@ class Client(models.Model):
     """
     id = models.PositiveIntegerField(
         blank=True,
+        editable=False,
         help_text=_(
             'A unique numeric identifier for the client. If not specified, it '
             'will be randomly generated.'
@@ -272,7 +273,6 @@ class Employee(models.Model):
         'vms.Client',
         help_text=_('The client company the employee works for.'),
         on_delete=models.CASCADE,
-        null=True,
         related_name='employees',
         related_query_name='employee',
         verbose_name=_('client'),
