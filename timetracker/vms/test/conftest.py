@@ -58,7 +58,7 @@ class EmployeeFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating test employees.
     """
-    supervisor = factory.SubFactory('vms.test.conftest.ClientAdminFactory')
+    client = factory.SubFactory('vms.test.conftest.ClientFactory')
     staffing_agency = factory.SubFactory(
         'vms.test.conftest.StaffingAgencyFactory',
     )

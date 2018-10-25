@@ -268,6 +268,15 @@ class Employee(models.Model):
     """
     An employee working for a specific company.
     """
+    client = models.ForeignKey(
+        'vms.Client',
+        help_text=_('The client company the employee works for.'),
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='employees',
+        related_query_name='employee',
+        verbose_name=_('client'),
+    )
     employee_id = models.PositiveIntegerField(
         blank=True,
         db_index=True,
@@ -287,6 +296,7 @@ class Employee(models.Model):
     )
     supervisor = models.ForeignKey(
         'vms.ClientAdmin',
+        blank=True,
         help_text=_(
             "The client administrator who can approve the user's hours.",
         ),
@@ -347,7 +357,7 @@ class Employee(models.Model):
         return reverse(
             'vms:clock-in',
             kwargs={
-                'client_slug': self.supervisor.client.slug,
+                'client_slug': self.client.slug,
                 'employee_id': self.employee_id,
             },
         )
@@ -361,7 +371,7 @@ class Employee(models.Model):
         return reverse(
             'vms:clock-out',
             kwargs={
-                'client_slug': self.supervisor.client.slug,
+                'client_slug': self.client.slug,
                 'employee_id': self.employee_id,
             },
         )
@@ -396,9 +406,7 @@ class Employee(models.Model):
         Save the employee and generate an ID for them if necessary.
         """
         if not self.employee_id:
-            query = self.__class__.objects.filter(
-                supervisor__client=self.supervisor.client,
-            )
+            query = self.__class__.objects.filter(client=self.client)
             self.employee_id = id_utils.generate_unique_id(
                 settings.EMPLOYEE_ID_LENGTH,
                 query,
@@ -423,8 +431,8 @@ class Employee(models.Model):
             return
 
         queryset = self.__class__.objects.filter(
+            client=self.client,
             employee_id=self.employee_id,
-            supervisor__client=self.supervisor.client,
         )
         if self.id:
             queryset = queryset.exclude(id=self.id)

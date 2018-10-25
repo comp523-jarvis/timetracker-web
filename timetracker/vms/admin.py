@@ -54,10 +54,11 @@ class ClientJobAdmin(admin.ModelAdmin):
 
 @admin.register(models.Employee)
 class EmployeeAdmin(admin.ModelAdmin):
-    autocomplete_fields = ('user',)
+    autocomplete_fields = ('client', 'user')
     date_hierarchy = 'time_created'
     fields = (
         'user',
+        'client',
         'staffing_agency',
         'employee_id',
         'supervisor',
@@ -77,15 +78,11 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_filter = ('is_active',)
     readonly_fields = ('time_created', 'time_updated')
     search_fields = (
+        'client__name',
         'staffing_agency__name',
-        'supervisor__client__name',
         'supervisor__user__name',
         'user__name',
     )
-
-    def client(self, obj):
-        return obj.supervisor.client
-    client.admin_order_field = 'supervisor__client__name'
 
     def supervisor_name(self, obj):
         return obj.supervisor.user.name
@@ -140,8 +137,8 @@ class TimeRecordAdmin(admin.ModelAdmin):
     search_fields = ('employee__user__name', 'job__client__name', 'job__name')
 
     def client(self, obj):
-        return obj.job.client
-    client.admin_order_field = 'job__client__name'
+        return obj.employee.client
+    client.admin_order_field = 'employee__client__name'
 
 
 @admin.register(models.TimeRecordApproval)

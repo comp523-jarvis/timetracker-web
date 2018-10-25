@@ -14,7 +14,7 @@ def test_clock_in_url(employee_factory):
     expected = reverse(
         'vms:clock-in',
         kwargs={
-            'client_slug': employee.supervisor.client.slug,
+            'client_slug': employee.client.slug,
             'employee_id': employee.employee_id,
         },
     )
@@ -31,7 +31,7 @@ def test_clock_out_url(employee_factory):
     expected = reverse(
         'vms:clock-out',
         kwargs={
-            'client_slug': employee.supervisor.client.slug,
+            'client_slug': employee.client.slug,
             'employee_id': employee.employee_id,
         },
     )
@@ -40,14 +40,14 @@ def test_clock_out_url(employee_factory):
 
 
 def test_save_new_employee(
-        client_admin_factory,
+        client_factory,
         staffing_agency_factory,
         user_factory):
     """
     Saving a new employee should generate a unique ID for the employee.
     """
     employee = models.Employee(
-        supervisor=client_admin_factory(),
+        client=client_factory(),
         staffing_agency=staffing_agency_factory(),
         user=user_factory()
     )
@@ -85,7 +85,7 @@ def test_validate_unique_excluded(employee_factory):
     check, the validation should pass.
     """
     emp1 = employee_factory()
-    emp2 = employee_factory(supervisor=emp1.supervisor)
+    emp2 = employee_factory(client=emp1.client)
 
     emp1.employee_id = emp2.employee_id
 
@@ -101,8 +101,8 @@ def test_validate_unique_new_employee_duplicate_id(
     """
     old_emp = employee_factory()
     new_emp = models.Employee(
+        client=old_emp.client,
         employee_id=old_emp.employee_id,
-        supervisor=old_emp.supervisor,
         staffing_agency=old_emp.staffing_agency,
         user=user_factory(),
     )
@@ -112,7 +112,7 @@ def test_validate_unique_new_employee_duplicate_id(
 
 
 def test_validate_unique_new_employee_unique_id(
-        client_admin_factory,
+        client_factory,
         employee_factory,
         user_factory):
     """
@@ -121,8 +121,8 @@ def test_validate_unique_new_employee_unique_id(
     """
     old_emp = employee_factory()
     new_emp = models.Employee(
+        client=client_factory(),
         employee_id=old_emp.employee_id,
-        supervisor=client_admin_factory(),
         staffing_agency=old_emp.staffing_agency,
         user=user_factory(),
     )
@@ -136,7 +136,7 @@ def test_validate_unique_old_employee_duplicate_id(employee_factory):
     employee working for the same client, the validation should fail.
     """
     emp1 = employee_factory()
-    emp2 = employee_factory(supervisor=emp1.supervisor)
+    emp2 = employee_factory(client=emp1.client)
 
     emp1.employee_id = emp2.employee_id
 
