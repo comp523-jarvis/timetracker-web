@@ -1,3 +1,5 @@
+import os
+
 import factory
 import pytest
 from django.conf import settings
@@ -21,6 +23,21 @@ class UserFactory(factory.django.DjangoModelFactory):
         manager = cls._get_manager(model_class)
 
         return manager.create_user(*args, **kwargs)
+
+
+@pytest.fixture
+def env():
+    """
+    Fixture to get a mutable copy of the environment that is restored
+    once the test is complete.
+    """
+    original = os.environ.copy()
+
+    os.environ['foo'] = 'bar'
+    yield os.environ
+
+    os.environ = original
+    assert 'foo' not in os.environ
 
 
 @pytest.fixture
