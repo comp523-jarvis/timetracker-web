@@ -7,7 +7,7 @@
   <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
     <h1 class="border-bottom mb-4 pb-1">Log In</h1>
     <p class="alert alert-info">
-      Don't have an account? <a href="{% url 'account:signup' %}">Sign up</a> to create one.
+      Don't have an account? <a href="{% url 'account:signup' %}{% if 'next' in request.GET %}?next={{ request.GET.next | urlencode }}{% endif %}">Sign up</a> to create one.
     </p>
     <form method="post">
       {{ form|crispy }}

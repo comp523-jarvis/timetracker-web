@@ -2,7 +2,7 @@ import logging
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
+from django.urls import reverse
 from django.views import generic
 from django.views.generic import TemplateView
 
@@ -47,4 +47,18 @@ class SignUpView(generic.FormView):
 
         logger.info('Registered new user %r', user)
 
-        return redirect('account:profile')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """
+        Get the URL that the user is redirected to after submitting the
+        form.
+
+        Returns:
+            The URL provided in the 'next' parameter or the URL of the
+            user's profile if no redirect URL is provided.
+        """
+        return self.request.GET.get(
+            'next',
+            reverse('account:profile'),
+        )
