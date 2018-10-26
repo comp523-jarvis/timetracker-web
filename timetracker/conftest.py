@@ -3,7 +3,7 @@ import os
 import factory
 import pytest
 from django.conf import settings
-from django.test import RequestFactory
+from django.test import RequestFactory, Client
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -23,6 +23,14 @@ class UserFactory(factory.django.DjangoModelFactory):
         manager = cls._get_manager(model_class)
 
         return manager.create_user(*args, **kwargs)
+
+
+@pytest.fixture
+def client():
+    """
+    Fixture to get a client used to make test requests.
+    """
+    return Client()
 
 
 @pytest.fixture
