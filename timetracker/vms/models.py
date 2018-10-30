@@ -310,8 +310,8 @@ class Employee(models.Model):
         'vms.StaffingAgency',
         help_text=_('The staffing agency that hired the employee.'),
         on_delete=models.CASCADE,
-        related_name='employees',
-        related_query_name='employee',
+        related_name='client_employees',
+        related_query_name='client_employee',
         verbose_name=_('staffing agency'),
     )
     time_created = models.DateTimeField(
@@ -560,6 +560,80 @@ class StaffingAgencyAdmin(models.Model):
             A string containing the names of the linked user and agency.
         """
         return f'{self.agency.name} admin {self.user.name}'
+
+
+class StaffingAgencyEmployee(models.Model):
+    """
+    An employee who is contracted out by a staffing agency.
+    """
+    agency = models.ForeignKey(
+        'vms.StaffingAgency',
+        help_text=_(
+            'The staffing agency the employee works for.'
+        ),
+        on_delete=models.CASCADE,
+        related_name='employees',
+        related_query_name='employee',
+        verbose_name=_('staffing agency'),
+    )
+    approved_by = models.ForeignKey(
+        'vms.StaffingAgencyAdmin',
+        blank=True,
+        help_text=_('The admin who accepted the employee.'),
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='approved_employees',
+    )
+    id = models.UUIDField(
+        default=uuid.uuid4,
+        help_text=_('A unique identifier for the employee.'),
+        primary_key=True,
+        verbose_name=_('ID'),
+    )
+    is_approved = models.BooleanField(
+        default=False,
+        help_text=_(
+            'A boolean indicating if the employee has been accepted into the '
+            'agency.'
+        ),
+        verbose_name=_('is approved'),
+    )
+    time_approved = models.DateTimeField(
+        blank=True,
+        help_text=_('The time that the request was approved.'),
+        null=True,
+        verbose_name=_('approval time'),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time that the request was submitted.'),
+        verbose_name=_('creation time'),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        help_text=_('The user that works for the agency.'),
+        on_delete=models.CASCADE,
+        related_name='staffing_agency_employees',
+        related_query_name='staffing_agency_employee',
+        verbose_name=_('user'),
+    )
+
+    class Meta:
+        unique_together = ('agency', 'user')
+        verbose_name = _('staffing agency employee')
+        verbose_name_plural = _('staffing agency employees')
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            A string identifying the user and staffing agency attached
+            to the employee record.
+        """
+        return (
+            f"{self.user.name} contracted by {self.agency.name}"
+        )
 
 
 class TimeRecord(models.Model):

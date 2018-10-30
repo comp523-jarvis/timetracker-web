@@ -79,6 +79,17 @@ class StaffingAgencyAdminFactory(factory.django.DjangoModelFactory):
         model = 'vms.StaffingAgencyAdmin'
 
 
+class StaffingAgencyEmployeeFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating test staffing agency employees.
+    """
+    agency = factory.SubFactory('vms.test.conftest.StaffingAgencyFactory')
+    user = factory.SubFactory('conftest.UserFactory')
+
+    class Meta:
+        model = 'vms.StaffingAgencyEmployee'
+
+
 class StaffingAgencyFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating test staffing agencies.
@@ -150,6 +161,14 @@ def staffing_agency_admin_factory(db):
     Fixture to get the factory used to create staffing agency admins.
     """
     return StaffingAgencyAdminFactory
+
+
+@pytest.fixture
+def staffing_agency_employee_factory(db):
+    """
+    Fixture to get the factory used to create staffing agency employees.
+    """
+    return StaffingAgencyEmployeeFactory
 
 
 @pytest.fixture

@@ -128,6 +128,36 @@ class StaffingAgencyAdminAdmin(admin.ModelAdmin):
     search_fields = ('agency__name', 'user__name')
 
 
+@admin.register(models.StaffingAgencyEmployee)
+class StaffingAgencyEmployeeAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('agency', 'approved_by', 'user')
+    date_hierarchy = 'time_created'
+    fieldsets = (
+        (
+            None,
+            {
+                'fields': ('user', 'agency', 'time_created'),
+            },
+        ),
+        (
+            _('Approval'),
+            {
+                'fields': ('is_approved', 'approved_by', 'time_approved'),
+            },
+        ),
+    )
+    list_display = (
+        'user',
+        'agency',
+        'time_created',
+        'is_approved',
+        'time_approved',
+    )
+    list_filter = ('is_approved',)
+    readonly_fields = ('time_created',)
+    search_fields = ('agency__name', 'approved_by__user__name', 'user__name')
+
+
 @admin.register(models.TimeRecord)
 class TimeRecordAdmin(admin.ModelAdmin):
     autocomplete_fields = ('job', 'employee')
