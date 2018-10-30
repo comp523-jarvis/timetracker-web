@@ -1,6 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import TemplateView, FormView
 
 from vms import forms, models, time_utils
@@ -11,12 +10,15 @@ class ClockInView(LoginRequiredMixin, FormView):
     View for clocking in.
     """
     form_class = forms.ClockInForm
-    success_url = reverse_lazy('vms:dashboard')
     template_name = 'vms/clock-in.html'
 
     def form_valid(self, form):
         form.save()
-        return super().form_valid(form)
+        return redirect(
+            'vms:employee-dash',
+            client_slug=form.employee.client.slug,
+            employee_id=form.employee.employee_id,
+        )
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -36,7 +38,6 @@ class ClockOutView(LoginRequiredMixin, FormView):
     View for clocking out.
     """
     form_class = forms.ClockOutForm
-    success_url = reverse_lazy('vms:dashboard')
     template_name = 'vms/clock-out.html'
 
     def form_valid(self, form):
@@ -52,7 +53,11 @@ class ClockOutView(LoginRequiredMixin, FormView):
         """
         form.save()
 
-        return super().form_valid(form)
+        return redirect(
+            'vms:employee-dash',
+            client_slug=form.employee.client.slug,
+            employee_id=form.employee.employee_id,
+        )
 
     def get_form_kwargs(self):
         """
@@ -78,7 +83,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         employees = self.request.user.employees.all()
         context['employees'] = employees
 
@@ -87,6 +91,27 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
         seconds_worked = sum([emp.total_time for emp in employees])
         seconds_worked = time_utils.round_time_worked(seconds_worked)
-        context['total_hours'] = seconds_worked / (60 * 60)
+        total_hours = seconds_worked / (60 * 60)
+        context['total_hours'] = total_hours
+
+        return context
+
+
+class EmployeeDashView(LoginRequiredMixin, TemplateView):
+    template_name = 'vms/employee-dash.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        employee = models.Employee.objects.get(
+            client__slug=self.kwargs.get('client_slug'),
+            employee_id=self.kwargs.get('employee_id'),
+        )
+        context['employee'] = employee
+
+        seconds_worked = employee.total_time
+        seconds_worked = time_utils.round_time_worked(seconds_worked)
+        total_hours = seconds_worked / (60 * 60)
+        context['total_hours'] = total_hours
 
         return context

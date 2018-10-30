@@ -76,6 +76,23 @@ def test_clock_out_url(employee_factory):
     assert employee.clock_out_url == expected
 
 
+def test_get_absolute_url(employee_factory):
+    """
+    This property should return the URL of the view used to see
+    employee dashboard.
+    """
+    employee = employee_factory()
+    expected = reverse(
+        'vms:employee-dash',
+        kwargs={
+            'client_slug': employee.client.slug,
+            'employee_id': employee.employee_id,
+        },
+    )
+
+    assert employee.get_absolute_url() == expected
+
+
 def test_save_new_employee(
         client_factory,
         staffing_agency_factory,

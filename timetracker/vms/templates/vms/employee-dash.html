@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>You are{% if not clocked_in %} not{% endif %} currently clocked in.</h2>
+  {% if employee.is_clocked_in %}
+    <a class="btn btn-primary" href="{{ employee.clock_out_url }}">Clock Out {{ employee }}</a>
+  {% else %}
+    <a class="btn btn-primary" href="{{ employee.clock_in_url }}">Clock In {{ employee }}</a>
+  {% endif %}
+
+<h2>Stats</h2>
+  <p></p>
+  <p>{{ request.user.name }}, you have worked {{ total_hours }} hour(s).</p>
+  <button>click me for all stats</button><button>click me for this pay period</button>
+  <p>You are looking at the most recent time period.</p>
+  <p> 0 of the {% for employee in employees %}
+   {{ employee.time_records.all|length }}
+  {% endfor %} time records are approved.</p>
+  <p> You have 0 approved hours out of 20.5 total worked hours this pay period.</p>
+  <p>You have worked an average of 4 hrs/day and 20.5 hrs/week.</p>
+  <p>-----------------------</p>
+  <h3>Time Records</h3>
+  <h4>{{ employee }}</h4>
+  <table style="text-align: center;">
+    <thead>
+      <tr>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Approved</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in employee.time_records.all|dictsortreversed:'time_start' %}
+        <tr>
+          <td>{{ record.time_start|date:'n/j/Y g:i a' }}</td>
+          <td>
+            {% if record.time_end %}
+              {{ record.time_end|date:'n/j/Y g:i a' }}
+            {% else %}
+              - in progress -
+            {% endif %}
+          </td>
+          <td>{% if record.is_approved %}✔{% else %}✗{% endif %}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

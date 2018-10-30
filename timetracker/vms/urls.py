@@ -17,6 +17,11 @@ client_detail_urls = [
         views.ClockOutView.as_view(),
         name='clock-out',
     ),
+    path(
+        'employees/<int:employee_id>/',
+        views.EmployeeDashView.as_view(),
+        name='employee-dash',
+    ),
 ]
 
 

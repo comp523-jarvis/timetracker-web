@@ -362,7 +362,9 @@ class Employee(models.Model):
             A string containing the name of the user who owns the
             employee instance.
         """
-        return f'{self.user.name} (Hired by {self.staffing_agency})'
+        return (
+            f'{self.user.name} (Hired by {self.staffing_agency})'
+        )
 
     def approve(self, admin):
         """
@@ -419,6 +421,19 @@ class Employee(models.Model):
             A boolean indicating if the employee is clocked in.
         """
         return self.time_records.filter(time_end=None).exists()
+
+    def get_absolute_url(self):
+        """
+        Returns:
+            The URL of the view for an employee of a client
+        """
+        return reverse(
+            'vms:employee-dash',
+            kwargs={
+                'client_slug': self.client.slug,
+                'employee_id': self.employee_id,
+            },
+        )
 
     @property
     def total_time(self):
