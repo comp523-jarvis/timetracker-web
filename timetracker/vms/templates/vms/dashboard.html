@@ -24,6 +24,7 @@
         <tr>
           <th>Start Time</th>
           <th>End Time</th>
+          <th>Job</th>
           <th>Approved</th>
         </tr>
       </thead>
@@ -38,6 +39,7 @@
                 -
               {% endif %}
             </td>
+            <td>{{ record.job }}</td>
             <td>{% if record.is_approved %}✔{% else %}✗{% endif %}</td>
           </tr>
         {% endfor %}

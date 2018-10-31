@@ -19,6 +19,10 @@ class ClockInForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         self.employee = employee
+        self.fields['job'] = forms.ChoiceField(
+            choices=[
+                (o.name, str(o)) for o in
+                models.ClientJob.objects.filter(client=employee.client)])
 
     def clean(self):
         if self.employee.is_clocked_in:
@@ -27,8 +31,11 @@ class ClockInForm(forms.Form):
             )
 
     def save(self):
-        record = models.TimeRecord.objects.create(employee=self.employee)
-
+        client = self.employee.client
+        name = self.data.get('job')
+        job = models.ClientJob.objects.get(client=client, name=name)
+        record = models.TimeRecord.objects.create(
+            employee=self.employee, job=job)
         logger.info('Created time record %r', record)
 
 
