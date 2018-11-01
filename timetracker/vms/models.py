@@ -664,6 +664,12 @@ class TimeRecord(models.Model):
         related_query_name='time_record',
         verbose_name=_('client job'),
     )
+    pay_rate = models.DecimalField(
+        decimal_places=2,
+        help_text=_('The hourly pay for the time record.'),
+        max_digits=11,
+        verbose_name=_('pay rate'),
+    )
     time_end = models.DateTimeField(
         blank=True,
         help_text=_('The ending time of the work period.'),

@@ -14,28 +14,46 @@ class ClockInForm(forms.Form):
     """
     Form to clock in the requesting user.
     """
+    job = forms.ModelChoiceField(empty_label=None, queryset=None)
 
     def __init__(self, employee, *args, **kwargs):
+        """
+        Instantiate the form to clock in a specific employee.
+
+        Args:
+            employee:
+                The employee that will be clocked in.
+            *args:
+                Positional arguments for the base form class.
+            **kwargs:
+                Keyword arguments for the base form class.
+        """
         super().__init__(*args, **kwargs)
 
         self.employee = employee
-        self.fields['job'] = forms.ChoiceField(
-            choices=[
-                (o.name, str(o)) for o in
-                models.ClientJob.objects.filter(client=employee.client)])
+        self.fields['job'].queryset = models.ClientJob.objects.filter(
+            client=employee.client,
+        )
 
     def clean(self):
+        """
+        Validate the form to ensure the employee is not already clocked
+        in.
+        """
         if self.employee.is_clocked_in:
             raise forms.ValidationError(
                 _('You are already clocked in.')
             )
 
     def save(self):
-        client = self.employee.client
-        name = self.data.get('job')
-        job = models.ClientJob.objects.get(client=client, name=name)
+        """
+        Save the form to create a new time record.
+        """
         record = models.TimeRecord.objects.create(
-            employee=self.employee, job=job)
+            employee=self.employee,
+            pay_rate=self.cleaned_data.get('job').pay_rate,
+            **self.cleaned_data,
+        )
         logger.info('Created time record %r', record)
 
 

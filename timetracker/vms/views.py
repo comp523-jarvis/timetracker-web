@@ -23,7 +23,7 @@ class ClockInView(LoginRequiredMixin, FormView):
 
         kwargs['employee'] = get_object_or_404(
             models.Employee,
-            supervisor__client__slug=self.kwargs.get('client_slug'),
+            client__slug=self.kwargs.get('client_slug'),
             employee_id=self.kwargs.get('employee_id'),
             user=self.request.user,
         )

@@ -85,6 +85,18 @@ class EmployeeAdmin(admin.ModelAdmin):
     )
 
     def supervisor_name(self, obj):
+        """
+        Get the name of the employee's supervisor.
+
+        Args:
+            obj:
+                The employee to get the supervisor of.
+
+        Returns:
+            The name of the employee's supervisor if they have an
+            assigned supervisor. Otherwise, a placeholder empty value is
+            returned.
+        """
         if obj.supervisor:
             return obj.supervisor.user.name
         else:
@@ -165,8 +177,15 @@ class StaffingAgencyEmployeeAdmin(admin.ModelAdmin):
 class TimeRecordAdmin(admin.ModelAdmin):
     autocomplete_fields = ('job', 'employee')
     date_hierarchy = 'time_start'
-    fields = ('employee', 'job', 'time_start', 'time_end')
-    list_display = ('employee', 'client', 'job', 'time_start', 'time_end')
+    fields = ('employee', 'job', 'pay_rate', 'time_start', 'time_end')
+    list_display = (
+        'employee',
+        'client',
+        'job',
+        'pay_rate',
+        'time_start',
+        'time_end',
+    )
     search_fields = ('employee__user__name', 'job__client__name', 'job__name')
 
     def client(self, obj):
