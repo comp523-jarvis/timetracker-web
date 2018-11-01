@@ -85,7 +85,10 @@ class EmployeeAdmin(admin.ModelAdmin):
     )
 
     def supervisor_name(self, obj):
-        return obj.supervisor.user.name
+        if obj.supervisor:
+            return obj.supervisor.user.name
+        else:
+            return "-"
     supervisor_name.admin_order_field = 'supervisor__user__name'
 
 
