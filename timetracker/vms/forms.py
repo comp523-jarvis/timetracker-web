@@ -40,6 +40,11 @@ class ClockInForm(forms.Form):
         Validate the form to ensure the employee is not already clocked
         in.
         """
+        if not self.employee.is_active:
+            raise forms.ValidationError(
+                _('Inactive employees are not allowed to clock in.'),
+            )
+
         if self.employee.is_clocked_in:
             raise forms.ValidationError(
                 _('You are already clocked in.')

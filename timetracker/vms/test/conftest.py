@@ -59,6 +59,7 @@ class EmployeeFactory(factory.django.DjangoModelFactory):
     Factory for generating test employees.
     """
     client = factory.SubFactory('vms.test.conftest.ClientFactory')
+    is_active = True
     staffing_agency = factory.SubFactory(
         'vms.test.conftest.StaffingAgencyFactory',
     )

@@ -18,6 +18,17 @@ def test_clean_clocked_in(employee_factory, time_record_factory):
         form.clean()
 
 
+def test_clean_inactive_user(employee_factory):
+    """
+    If the employee is inactive, the form should not validate.
+    """
+    employee = employee_factory(is_active=False)
+    form = forms.ClockInForm(employee)
+
+    with pytest.raises(ValidationError):
+        form.clean()
+
+
 def test_clean_not_clocked_in(employee_factory):
     """
     If the employee is not clocked in, cleaning the form should succeed.
