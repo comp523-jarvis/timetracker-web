@@ -269,6 +269,16 @@ class Employee(models.Model):
     """
     An employee working for a specific company.
     """
+    approved_by = models.ForeignKey(
+        'vms.ClientAdmin',
+        blank=True,
+        help_text=_('The admin who approved the employee.'),
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='approved_employees',
+        related_query_name='approved_employee',
+        verbose_name=_('approved by'),
+    )
     client = models.ForeignKey(
         'vms.Client',
         help_text=_('The client company the employee works for.'),
@@ -287,7 +297,7 @@ class Employee(models.Model):
         verbose_name=_('employee ID'),
     )
     is_active = models.BooleanField(
-        default=True,
+        default=False,
         help_text=_(
             'A boolean indicating if this user is currently active. Inactive '
             'employees cannot log any working hours.'
@@ -313,6 +323,12 @@ class Employee(models.Model):
         related_name='client_employees',
         related_query_name='client_employee',
         verbose_name=_('staffing agency'),
+    )
+    time_approved = models.DateTimeField(
+        blank=True,
+        help_text=_('The time that the employee was approved.'),
+        null=True,
+        verbose_name=_('approval time'),
     )
     time_created = models.DateTimeField(
         auto_now_add=True,
@@ -347,6 +363,24 @@ class Employee(models.Model):
             employee instance.
         """
         return f'{self.user.name} (Hired by {self.staffing_agency})'
+
+    def approve(self, admin):
+        """
+        Approve the employee's request to join the client.
+
+        Args:
+            admin:
+                The client admin who approved the request.
+        """
+        if self.time_approved is not None:
+            logger.warning('Approving previously approved employee %r', self)
+
+            return
+
+        self.approved_by = admin
+        self.is_active = True
+        self.time_approved = timezone.now()
+        self.save()
 
     @property
     def clock_in_url(self):

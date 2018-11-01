@@ -9,7 +9,7 @@ def migrate_pay_rates(apps, schema_editor):
     """
     TimeRecord = apps.get_model('vms', 'TimeRecord')
     for record in TimeRecord.objects.all():
-        record.pay_rate = record.job.pay_rate
+        record.pay_rate = record.job.pay_rate if record.job else 0
         record.save()
 
 

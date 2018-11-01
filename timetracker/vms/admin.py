@@ -56,15 +56,32 @@ class ClientJobAdmin(admin.ModelAdmin):
 class EmployeeAdmin(admin.ModelAdmin):
     autocomplete_fields = ('client', 'user')
     date_hierarchy = 'time_created'
-    fields = (
-        'user',
-        'client',
-        'staffing_agency',
-        'employee_id',
-        'supervisor',
-        'is_active',
-        'time_created',
-        'time_updated',
+    fieldsets = (
+        (
+            None,
+            {
+                'fields': ('user', 'client', 'staffing_agency', 'employee_id'),
+            },
+        ),
+        (
+            _('Employee Details'),
+            {
+                'fields': ('supervisor', 'is_active'),
+            },
+        ),
+        (
+            _('Approval Information'),
+            {
+                'fields': ('approved_by', 'time_approved'),
+            },
+        ),
+        (
+            _('Detailed Information'),
+            {
+                'classes': ('collapse',),
+                'fields': ('time_created', 'time_updated'),
+            },
+        ),
     )
     list_display = (
         'employee_id',

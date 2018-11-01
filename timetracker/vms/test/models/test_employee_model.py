@@ -1,8 +1,45 @@
 import pytest
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.utils import timezone
 
 from vms import models
+
+
+def test_approve(client_admin_factory, employee_factory):
+    """
+    Approving an employee should save the approval information and mark
+    the employee as active.
+    """
+    employee = employee_factory(is_active=False)
+    admin = client_admin_factory(client=employee.client)
+
+    employee.approve(admin)
+    employee.refresh_from_db()
+
+    assert employee.approved_by == admin
+    assert employee.is_active
+    assert employee.time_approved is not None
+
+
+def test_approve_already_approved(client_admin_factory, employee_factory):
+    """
+    If the employee is already approved, no action should be taken.
+    """
+    admin = client_admin_factory()
+    time = timezone.now()
+    employee = employee_factory(
+        approved_by=admin,
+        client=admin.client,
+        is_active=True,
+        time_approved=time,
+    )
+
+    employee.approve(admin)
+    employee.refresh_from_db()
+
+    assert employee.approved_by == admin
+    assert employee.time_approved == time
 
 
 def test_clock_in_url(employee_factory):
