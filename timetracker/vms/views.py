@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
-from django.views.generic import TemplateView, FormView
 from django.urls import reverse_lazy
+from django.views.generic import TemplateView, FormView, DetailView
 
 from vms import forms, models, time_utils
 
@@ -135,3 +135,13 @@ class EmployeeDashView(LoginRequiredMixin, TemplateView):
         context['total_hours'] = total_hours
 
         return context
+
+
+class ClientView(DetailView):
+    context_object_name = 'client'
+    template_name = 'vms/clientview.html'
+
+    def get_object(self):
+        return get_object_or_404(
+            models.Client,
+            slug=self.kwargs.get('client_slug'))

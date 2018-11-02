@@ -22,6 +22,11 @@ client_detail_urls = [
         views.EmployeeDashView.as_view(),
         name='employee-dash',
     ),
+    path(
+        '',
+        views.ClientView.as_view(),
+        name='client-view',
+    ),
 ]
 
 

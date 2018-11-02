@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Client View</h1>
+<h2>= = = = = =</h2>
+<h3>{{ client }}</h3>
+<ul class="list-group">
+  <li class="list-group-item">ID: {{client.id}}</li>
+  <li class="list-group-item">Email: {{client.email}}</li>
+  <li class="list-group-item">Name: {{client.name}}</li>
+  <li class="list-group-item">Notes: {{client.notes}}</li>
+  <li class="list-group-item">Phone Number: {{client.phone_number}}</li>
+</ul>
+{% endblock %}
