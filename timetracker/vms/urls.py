@@ -35,4 +35,9 @@ urlpatterns = [
         views.DashboardView.as_view(),
         name='dashboard',
     ),
+    path(
+        'create-staff-agency/',
+        views.CreateStaffAgencyView.as_view(),
+        name='create-staff-agency'
+    ),
 ]

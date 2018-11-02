@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import TemplateView, FormView
+from django.urls import reverse_lazy
 
 from vms import forms, models, time_utils
 
@@ -86,6 +87,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         employees = self.request.user.employees.all()
         context['employees'] = employees
 
+        if models.StaffingAgencyAdmin.objects.filter(
+                user=self.request.user).exists():
+            adminagency = models.StaffingAgencyAdmin.objects.filter(
+                user=self.request.user)
+            context['staff_admin'] = adminagency
+
         clocked_in = any([e.is_clocked_in for e in employees])
         context['clocked_in'] = clocked_in
 
@@ -95,6 +102,19 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['total_hours'] = total_hours
 
         return context
+
+
+class CreateStaffAgencyView(LoginRequiredMixin, FormView):
+    """
+    View for creating a staffing agency
+    """
+    form_class = forms.CreateStaffAgencyForm
+    success_url = reverse_lazy('vms:dashboard')
+    template_name = 'vms/create-staff-agency.html'
+
+    def form_valid(self, form):
+        form.save(self.request.user)
+        return super().form_valid(form)
 
 
 class EmployeeDashView(LoginRequiredMixin, TemplateView):

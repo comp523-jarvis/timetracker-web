@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Create a staffing agency{% endblock %}
+
+{% block content %}
+{% if request.user.is_staff %}
+    <h1>Create a staffing agency</h1>
+    <form method="post">
+      {{ form.as_p }}
+      {% csrf_token %}
+      <button type="submit">Create</button>
+    </form>
+{% else %}
+<h1>ERROR</h1>
+<p>you do not have the priviledges to create a staffing agency. Contact an admin for more info.</p>
+{% endif %}
+{% endblock %}

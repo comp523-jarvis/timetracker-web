@@ -105,3 +105,27 @@ class ClockOutForm(forms.Form):
         record.save()
 
         logger.info('Completed time record %r', record)
+
+
+class CreateStaffAgencyForm(forms.Form):
+    """
+    Form to create staffing agency.
+    """
+    email_field = forms.EmailField(required=True)
+    name_field = forms.CharField(required=True)
+    notes_field = forms.CharField(required=False, widget=forms.Textarea)
+    regex = '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-'\
+        '. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'
+    phone_number_field = forms.RegexField(regex=regex, required=False)
+
+    def save(self, user):
+        agency = models.StaffingAgency.objects.create(
+            email=self.data.get('email_field'),
+            name=self.data.get('name_field'),
+            notes=self.data.get('notes_field'),
+            phone_number=self.data.get('phone_number_field')
+            )
+        models.StaffingAgencyAdmin.objects.create(
+            user=user,
+            agency=agency
+        )
