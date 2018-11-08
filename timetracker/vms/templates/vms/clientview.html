@@ -1,14 +1,30 @@
 {% extends 'base.html' %}
-{% block content %}
 
-<h1>Client View</h1>
-<h2>= = = = = =</h2>
-<h3>{{ client }}</h3>
-<ul class="list-group">
-  <li class="list-group-item">ID: {{client.id}}</li>
-  <li class="list-group-item">Email: {{client.email}}</li>
-  <li class="list-group-item">Name: {{client.name}}</li>
-  <li class="list-group-item">Notes: {{client.notes}}</li>
-  <li class="list-group-item">Phone Number: {{client.phone_number}}</li>
-</ul>
+
+{% block title %}{{ client.name }}{% endblock %}
+
+{% block content %}
+  <h1 class="border-bottom mb-5 pb-1">{{ client.name }} <small>({{ client.id }})</small></h1>
+
+  <h2>Contact Information</h2>
+  <dl class="row">
+    <div class="col-sm-12 col-md-6">
+      <dt>Email</dt>
+      <dd>{{ client.email }}</dd>
+    </div>
+
+    {% if client.phone_number %}
+      <div class="col-sm-12 col-md-6">
+        <dt>Phone Number</dt>
+        <dd>{{ client.phone_number }}</dd>
+      </div>
+    {% endif %}
+  </dl>
+
+  <hr class="my-5">
+
+  <h2>Manage Company</h2>
+  <p>
+    <a class="btn btn-primary" href="{{ client.job_list_url }}">Manage Jobs</a>
+  </p>
 {% endblock %}

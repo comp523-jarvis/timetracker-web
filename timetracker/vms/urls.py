@@ -23,6 +23,16 @@ client_detail_urls = [
         name='employee-dash',
     ),
     path(
+        'jobs/',
+        views.ClientJobListView.as_view(),
+        name='client-job-list',
+    ),
+    path(
+        'jobs/<slug:job_slug>/',
+        views.ClientJobDetailView.as_view(),
+        name='client-job-detail',
+    ),
+    path(
         '',
         views.ClientView.as_view(),
         name='client-view',

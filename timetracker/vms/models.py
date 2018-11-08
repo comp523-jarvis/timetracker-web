@@ -124,6 +124,31 @@ class Client(models.Model):
         if not self.slug:
             self.slug = generate_slug(self.name, self.__class__.objects.all())
 
+    def get_absolute_url(self):
+        """
+        Get the URL of the instance's detail view.
+
+        Returns:
+            The absolute URL of the instance's detail view.
+        """
+        return reverse(
+            'vms:client-view',
+            kwargs={'client_slug': self.slug},
+        )
+
+    @property
+    def job_list_url(self):
+        """
+        Get the URL of the client's job list.
+
+        Returns:
+            The URL of the view where all the client's jobs are listed.
+        """
+        return reverse(
+            'vms:client-job-list',
+            kwargs={'client_slug': self.slug},
+        )
+
 
 class ClientAdmin(models.Model):
     """
@@ -263,6 +288,18 @@ class ClientJob(models.Model):
             }
 
             raise ValidationError({'name': message})
+
+    def get_absolute_url(self):
+        """
+        Get the absolute URL of the instance's detail view.
+
+        Returns:
+            The absolute URL of the instance's detail view.
+        """
+        return reverse(
+            'vms:client-job-detail',
+            kwargs={'client_slug': self.client.slug, 'job_slug': self.slug},
+        )
 
 
 class Employee(models.Model):

@@ -1,9 +1,93 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.views import generic
 from django.views.generic import TemplateView, FormView, DetailView
 
 from vms import forms, models, time_utils
+
+
+class ClientJobDetailView(LoginRequiredMixin, generic.UpdateView):
+    """
+    View or update the details of a specific client job.
+    """
+    context_object_name = 'job'
+    fields = ('pay_rate', 'description')
+    template_name = 'vms/client-job-detail.html'
+
+    def get_object(self, queryset=None):
+        """
+        Get the job specified by the client and job present in the URL.
+
+        Args:
+            queryset:
+                An optional queryset to choose from. If no queryset is
+                provided, all client jobs will be searched.
+
+        Returns:
+            The client job specified by the client and jobs slugs in the
+            URL.
+        """
+        if queryset is None:
+            queryset = models.ClientJob.objects.all()
+
+        return get_object_or_404(
+            queryset,
+            client__admin__user=self.request.user,
+            client__slug=self.kwargs.get('client_slug'),
+            slug=self.kwargs.get('job_slug'),
+        )
+
+
+class ClientJobListView(LoginRequiredMixin, generic.ListView):
+    """
+    List the jobs for a particular client.
+    """
+    context_object_name = 'jobs'
+    template_name = 'vms/client-job-list.html'
+
+    def __init__(self):
+        """
+        Initialize the client to ``None``.
+        """
+        super().__init__()
+
+        self._client = None
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Get the context to render the template with.
+
+        Args:
+            object_list:
+                The list of client jobs rendered by the view.
+            **kwargs:
+                Additional context variables for the template.
+
+        Returns:
+            A dictionary containing the context used to render the
+            view's template.
+        """
+        context = super().get_context_data(object_list=object_list, **kwargs)
+
+        context['client'] = self._client
+
+        return context
+
+    def get_queryset(self):
+        """
+        Get the jobs for the specified client.
+
+        Returns:
+            The jobs owned by the client whose slug is given in the URL.
+        """
+        self._client = get_object_or_404(
+            models.Client,
+            admin__user=self.request.user,
+            slug=self.kwargs.get('client_slug'),
+        )
+
+        return self._client.jobs.all()
 
 
 class ClockInView(LoginRequiredMixin, FormView):

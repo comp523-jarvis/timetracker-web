@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}{{ job.name }}{% endblock %}
+
+{% block content %}
+  <div class="col-sm-12 col-md-8 offset-md-2">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ job.client.get_absolute_url }}">{{ job.client.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{{ job.client.job_list_url }}">Jobs</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ job.name }}</li>
+      </ol>
+    </nav>
+
+    <h1 class="mb-3">{{ job.name }}</h1>
+
+    <form method="post">
+      {{ form|crispy }}
+      {% csrf_token %}
+      <button class="btn btn-primary" type="submit">Save</button>
+    </form>
+  </div>
+{% endblock %}
