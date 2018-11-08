@@ -149,6 +149,20 @@ class Client(models.Model):
             kwargs={'client_slug': self.slug},
         )
 
+    @property
+    def unapproved_time_record_list_url(self):
+        """
+        Get the URL of the client's unapproved time record list.
+
+        Returns:
+            The absolute URL of the view to list the client's unapproved
+            time records.
+        """
+        return reverse(
+            'vms:unapproved-time-record-list',
+            kwargs={'client_slug': self.slug},
+        )
+
 
 class ClientAdmin(models.Model):
     """
@@ -812,6 +826,20 @@ class TimeRecord(models.Model):
                     f'{et:%I:%M %p on %m/%d/%Y}.'
                 )
         return f'Time Record starting at {st:%I:%M %p} on {st:%m/%d/%Y}.'
+
+    @property
+    def approval_url(self):
+        """
+        Get the URL of the view used to approve the time record.
+
+        Returns:
+            The absolute URL of the view used to approve the time
+            record.
+        """
+        return reverse(
+            'vms:time-record-approve',
+            kwargs={'time_record_id': self.id},
+        )
 
     @property
     def is_approved(self):

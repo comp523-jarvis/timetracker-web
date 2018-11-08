@@ -129,3 +129,41 @@ class CreateStaffAgencyForm(forms.Form):
             user=user,
             agency=agency
         )
+
+
+class TimeRecordApprovalForm(forms.Form):
+    """
+    Form to approve a time record.
+    """
+
+    def __init__(self, time_record, approving_user, *args, **kwargs):
+        """
+        Initialize the form with the time record being approved and the
+        supervisor doing the approval.
+
+        Args:
+            time_record:
+                The time record being approved.
+            approving_user:
+                The user who is approving the time record.
+            *args:
+                Positional arguments for the base form class.
+            **kwargs:
+                Keyword arguments for the base form class.
+        """
+        super().__init__(*args, **kwargs)
+
+        self.time_record = time_record
+        self.approving_user = approving_user
+
+    def save(self):
+        """
+        Create an approval for the time record associated with the form.
+
+        Returns:
+            The approval instance created for the time record.
+        """
+        return models.TimeRecordApproval.objects.create(
+            time_record=self.time_record,
+            user=self.approving_user,
+        )

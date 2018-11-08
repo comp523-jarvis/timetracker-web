@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+
+{% block title %}Unapproved Hours{% endblock %}
+
+{% block content %}
+  <h1 class="mb-5">Unapproved Hours</h1>
+
+  {% if not time_records %}
+    <p class="alert alert-success">
+      There are no unapproved time records.
+    </p>
+  {% else %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Employee</th>
+          <th scope="col">Job</th>
+          <th scope="col">Pay Rate</th>
+          <th scope="col">Start Time</th>
+          <th scope="col">End Time</th>
+          <th scope="col">Approve</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in time_records %}
+          <tr>
+            <td>{{ record.employee.user.name }} ({{ record.employee.id }})</td>
+            <td>{{ record.job.name }}</td>
+            <td>${{ record.pay_rate | floatformat:2 | intcomma }}</td>
+            <td>{{ record.time_start }}</td>
+            <td>{{ record.time_end }}</td>
+            <td>
+              <form action="{{ record.approval_url }}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-primary btn-sm" type="submit">Approve</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endblock %}

@@ -33,6 +33,11 @@ client_detail_urls = [
         name='client-job-detail',
     ),
     path(
+        'time-records/unapproved/',
+        views.UnapprovedTimeRecordListView.as_view(),
+        name='unapproved-time-record-list',
+    ),
+    path(
         '',
         views.ClientView.as_view(),
         name='client-view',
@@ -54,5 +59,10 @@ urlpatterns = [
         'create-staff-agency/',
         views.CreateStaffAgencyView.as_view(),
         name='create-staff-agency'
+    ),
+    path(
+        'time-records/<uuid:time_record_id>/approve/',
+        views.TimeRecordApproveView.as_view(),
+        name='time-record-approve',
     ),
 ]

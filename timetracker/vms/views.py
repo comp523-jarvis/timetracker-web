@@ -201,6 +201,16 @@ class CreateStaffAgencyView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
+class ClientView(DetailView):
+    context_object_name = 'client'
+    template_name = 'vms/clientview.html'
+
+    def get_object(self):
+        return get_object_or_404(
+            models.Client,
+            slug=self.kwargs.get('client_slug'))
+
+
 class EmployeeDashView(LoginRequiredMixin, TemplateView):
     template_name = 'vms/employee-dash.html'
 
@@ -221,11 +231,76 @@ class EmployeeDashView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ClientView(DetailView):
-    context_object_name = 'client'
-    template_name = 'vms/clientview.html'
+class TimeRecordApproveView(LoginRequiredMixin, generic.FormView):
+    """
+    Approve a specific time record.
+    """
+    form_class = forms.TimeRecordApprovalForm
 
-    def get_object(self):
-        return get_object_or_404(
+    def form_valid(self, form):
+        """
+        Save the form and redirect back to the hours approval page.
+
+        Args:
+            form:
+                The valid form instance to save.
+
+        Returns:
+            A redirect response back to the list of unapproved hours for
+            the client.
+        """
+        approval = form.save()
+        client = approval.time_record.employee.client
+
+        return redirect(
+            client.unapproved_time_record_list_url
+        )
+
+    def get_form_kwargs(self):
+        """
+        Add additional information required for our custom form.
+
+        Returns:
+            The keyword arguments used to construct the form.
+        """
+        kwargs = super().get_form_kwargs()
+
+        kwargs['approving_user'] = self.request.user
+        kwargs['time_record'] = get_object_or_404(
+            models.TimeRecord,
+            employee__client__admin__user=self.request.user,
+            id=self.kwargs.get('time_record_id'),
+        )
+
+        return kwargs
+
+
+class UnapprovedTimeRecordListView(LoginRequiredMixin, generic.ListView):
+    """
+    List all the unapproved time records for a specific client.
+    """
+    context_object_name = 'time_records'
+    template_name = 'vms/unapproved-hours-list.html'
+
+    def get_queryset(self):
+        """
+        Get the list of unapproved hours for the client.
+
+        Returns:
+            A queryset containing the unapproved time records for the
+            client specified in the URL.
+        """
+        client = get_object_or_404(
             models.Client,
-            slug=self.kwargs.get('client_slug'))
+            admin__user=self.request.user,
+            slug=self.kwargs.get('client_slug'),
+        )
+
+        return models.TimeRecord.objects.exclude(
+            time_end=None,
+        ).filter(
+            approval=None,
+            employee__client=client,
+        ).order_by(
+            '-time_start',
+        )
