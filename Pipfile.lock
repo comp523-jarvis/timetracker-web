@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "fc8f2361ca4ff0e35ed0e167aa804c194020a42e0ee84e4a5e263f27abb4a334"
+            "sha256": "753e480f97d9f0bb97a9a1c0a5f18df7273714183e2be85da8ccabf30be6ad01"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,13 @@
         ]
     },
     "default": {
+        "boto": {
+            "hashes": [
+                "sha256:147758d41ae7240dc989f0039f27da8ca0d53734be0eb869ef16e3adcfa462e8",
+                "sha256:ea0d3b40a2d852767be77ca343b58a9e3a4b00d9db440efb8da74b4e58025e5a"
+            ],
+            "version": "==2.49.0"
+        },
         "django": {
             "hashes": [
                 "sha256:1ffab268ada3d5684c05ba7ce776eaeedef360712358d6a6b340ae9f16486916",
@@ -31,6 +38,28 @@
             ],
             "index": "pypi",
             "version": "==1.7.2"
+        },
+        "django-email-utils": {
+            "hashes": [
+                "sha256:68ddd14fa57ef762173084b56c5c6aff35712b6e68dec04512c1b8becef6be1e",
+                "sha256:988fd1038608b78c2ef5869920c6406694d726d5c383d56dd05feecebfc5f992"
+            ],
+            "index": "pypi",
+            "version": "==0.1.1"
+        },
+        "django-ses": {
+            "hashes": [
+                "sha256:d16e0de48cd3369b45af9a292e8c31f0aa014149d0807eeb2edae795f99878f9",
+                "sha256:e0a8b3c9c2123dfd04d29bb9e2423610f855e2607f53a4c2515ff94313de687f"
+            ],
+            "index": "pypi",
+            "version": "==0.8.7"
+        },
+        "future": {
+            "hashes": [
+                "sha256:67045236dcfd6816dc439556d009594abf643e5eb48992e36beac09c2ca659b8"
+            ],
+            "version": "==0.17.1"
         },
         "psycopg2-binary": {
             "hashes": [

@@ -87,6 +87,12 @@ Default: `''`
 
 Set the key Django uses for certain security operations. This must be set if `DJANGO_DEBUG` is `false`. See [the documentation](https://docs.djangoproject.com/en/2.1/ref/settings/#std:setting-SECRET_KEY) for details on the operations that the secret key is used for. 
 
+#### `DJANGO_SES_ENABLED`
+
+Default: `false`
+
+Set to `true` (case insensitive) to enable sending emails through AWS SES. If this is enabled, the server process needs to have access to AWS credentials allowing SES access. The easiest ways to accomplish this are running the server on an EC2 instance with a role that allows access or by providing `AWS_ACCESS_KEY_ID` and `AWS_SECRET_KEY` environment variables to the server process.
+
 #### `DJANGO_STATIC_ROOT`
 
 Default: `''`

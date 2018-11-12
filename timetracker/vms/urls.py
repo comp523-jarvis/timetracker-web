@@ -51,14 +51,19 @@ urlpatterns = [
         include(client_detail_urls)
     ),
     path(
+        'create-client/',
+        views.ClientCreateView.as_view(),
+        name='client-create',
+    ),
+    path(
+        'create-staffing-agency/',
+        views.CreateStaffAgencyView.as_view(),
+        name='create-staff-agency'
+    ),
+    path(
         'dashboard/',
         views.DashboardView.as_view(),
         name='dashboard',
-    ),
-    path(
-        'create-staff-agency/',
-        views.CreateStaffAgencyView.as_view(),
-        name='create-staff-agency'
     ),
     path(
         'time-records/<uuid:time_record_id>/approve/',

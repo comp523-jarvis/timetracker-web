@@ -14,6 +14,17 @@ class ClientAdminFactory(factory.django.DjangoModelFactory):
         model = 'vms.ClientAdmin'
 
 
+class ClientAdminInviteFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for generating test client admin invites.
+    """
+    client = factory.SubFactory('vms.test.conftest.ClientFactory')
+    email = factory.Sequence(lambda n: f'invite{n}@example.com')
+
+    class Meta:
+        model = 'vms.ClientAdminInvite'
+
+
 class ClientFactory(factory.django.DjangoModelFactory):
     """
     Factory for generating test clients.
@@ -135,6 +146,14 @@ def client_admin_factory(db):
     Fixture to get the factory used to create client admins.
     """
     return ClientAdminFactory
+
+
+@pytest.fixture
+def client_admin_invite_factory(db):
+    """
+    Fixture to get the factory used to create client admin invites.
+    """
+    return ClientAdminInviteFactory
 
 
 @pytest.fixture

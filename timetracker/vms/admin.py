@@ -43,6 +43,16 @@ class ClientAdminAdmin(admin.ModelAdmin):
     search_fields = ('client__name', 'user__name')
 
 
+@admin.register(models.ClientAdminInvite)
+class ClientAdminInviteAdmin(admin.ModelAdmin):
+    autocomplete_fields = ('client',)
+    date_hierarchy = 'time_created'
+    fields = ('client', 'email', 'token', 'time_created')
+    list_display = ('client', 'email', 'time_created')
+    readonly_fields = ('time_created', 'token')
+    search_fields = ('client__name', 'email', 'token')
+
+
 @admin.register(models.ClientJob)
 class ClientJobAdmin(admin.ModelAdmin):
     autocomplete_fields = ('client',)

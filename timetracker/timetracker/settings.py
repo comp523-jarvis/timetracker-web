@@ -179,6 +179,15 @@ LOGIN_URL = 'account:login'
 LOGOUT_REDIRECT_URL = 'home'
 
 
+# Email Settings
+
+DEFAULT_FROM_EMAIL = 'no-reply@ulimi.io'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+if os.getenv('DJANGO_SES_ENABLED', 'false').lower() == 'true':
+    EMAIL_BACKEND = 'django_ses.SESBackend'
+
+
 # Settings for generating slugs.
 
 ########################################################################

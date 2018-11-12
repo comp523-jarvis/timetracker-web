@@ -2,12 +2,51 @@ import logging
 
 from django import forms
 from django.utils import timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext as _, ugettext_lazy
 
 from vms import models
 
 
 logger = logging.getLogger(__name__)
+
+
+class ClientCreateForm(forms.ModelForm):
+    """
+    Form to create a new client.
+
+    Once the form is saved, a new client company is saved, and an email
+    invitation to become an admin for the client is sent to the provided
+    email address.
+    """
+    admin_email = forms.EmailField(
+        help_text=ugettext_lazy(
+            'The email address of the person who will be made an '
+            'administrator of the new client.'
+        ),
+        label=ugettext_lazy('Admin Email Address'),
+    )
+
+    class Meta:
+        fields = ('name', 'email', 'phone_number', 'admin_email', 'notes')
+        model = models.Client
+
+    def save(self, commit=True):
+        """
+        Create a new client and send an email to the admin.
+
+        Returns:
+            The created client instance.
+        """
+        admin_email = self.cleaned_data.pop('admin_email')
+        client = super().save(commit)
+
+        invite = models.ClientAdminInvite.objects.create(
+            client=client,
+            email=admin_email,
+        )
+        invite.send()
+
+        return client
 
 
 class ClockInForm(forms.Form):

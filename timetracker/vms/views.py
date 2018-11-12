@@ -1,10 +1,47 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import TemplateView, FormView, DetailView
 
 from vms import forms, models, time_utils
+
+
+class ClientCreateView(UserPassesTestMixin, generic.FormView):
+    """
+    Create a new client company.
+    """
+    form_class = forms.ClientCreateForm
+    template_name = 'vms/client-create.html'
+
+    def form_valid(self, form):
+        """
+        Save the form and redirect the user to the newly created
+        client's detail page.
+
+        Returns:
+            A redirect response sending the user to the detail page of
+            the newly created client.
+        """
+        client = form.save()
+
+        return redirect(client.get_absolute_url())
+
+    def test_func(self):
+        """
+        Ensure the requesting user is the administrator of a staffing
+        agency.
+
+        Returns:
+            A boolean indicating if the user should be allowed to access
+            the view.
+        """
+        if not self.request.user.is_authenticated:
+            return False
+
+        return models.StaffingAgencyAdmin.objects.filter(
+            user=self.request.user,
+        ).exists()
 
 
 class ClientJobDetailView(LoginRequiredMixin, generic.UpdateView):

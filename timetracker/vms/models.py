@@ -3,6 +3,7 @@ import decimal
 import logging
 import uuid
 
+import email_utils
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -43,6 +44,16 @@ def generate_slug(value, queryset, slug_dest='slug'):
         suffix = f'-{get_random_string(settings.SLUG_KEY_LENGTH)}'
 
     return f'{base}{suffix}'
+
+
+def generate_token():
+    """
+    Generate a random token.
+
+    Returns:
+        A random 16-character alphanumeric string.
+    """
+    return get_random_string(16)
 
 
 class Client(models.Model):
@@ -206,6 +217,92 @@ class ClientAdmin(models.Model):
             A string containing the names of the linked user and client.
         """
         return f'{self.client.name} admin {self.user.name}'
+
+
+class ClientAdminInvite(models.Model):
+    """
+    An invitation for a user to become a client admin.
+    """
+    client = models.ForeignKey(
+        'vms.Client',
+        help_text=_('The client that the invitee will become an admin of.'),
+        on_delete=models.CASCADE,
+        related_name='admin_invites',
+        related_query_name='admin_invite',
+        verbose_name=_('client'),
+    )
+    email = models.EmailField(
+        help_text=_('The email address to send the invitation to.'),
+        verbose_name=_('email'),
+    )
+    time_created = models.DateTimeField(
+        auto_now_add=True,
+        help_text=_('The time the invitation was created at.'),
+        verbose_name=_('creation time'),
+    )
+    token = models.CharField(
+        blank=True,
+        default=generate_token,
+        help_text=_('A unique token used to accept the invitation.'),
+        max_length=16,
+        unique=True,
+        verbose_name=_('token'),
+    )
+
+    class Meta:
+        ordering = ('time_created',)
+        verbose_name = _('client administrator invitation')
+        verbose_name_plural = _('client administrator invitations')
+
+    def __str__(self):
+        """
+        Get a user readable string describing the instance.
+
+        Returns:
+            A string containing the email address the invite was sent to
+            as well as the name of the client company.
+        """
+        return f'Admin invite for {self.email} from {self.client}'
+
+    def accept(self, user):
+        """
+        Accept the invitation.
+
+        Args:
+            user:
+                The user who accepted the invitation.
+
+        Returns:
+            The created client admin.
+        """
+        admin = ClientAdmin.objects.create(client=self.client, user=user)
+        logger.info(
+            'Create new client administrator from invite: %r',
+            admin,
+        )
+
+        logger.debug('Deleting admin invitation %r after being accepted', self)
+        self.delete()
+
+        return admin
+
+    def send(self):
+        """
+        Send an invitation message to the email address associated with
+        the instance.
+        """
+        email_utils.send_email(
+            context={
+                'client': self.client,
+                'token': self.token,
+            },
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[self.email],
+            subject=ugettext('Client Administrator Invitation'),
+            template_name='vms/emails/client-admin-invite',
+        )
+
+        logger.info('Sent client admin invitation to %s', self.email)
 
 
 class ClientJob(models.Model):

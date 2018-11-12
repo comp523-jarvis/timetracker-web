@@ -1,0 +1,13 @@
+{% load i18n %}{% blocktrans with client_name=client.name %}You have been invited to become an administrator at {{ client_name }}. Use the following token to accept this invitation:
+
+    {{ token }}
+
+If you do not want to accept this invitation, you may simply ignore this email.
+
+
+Thanks,
+The Ulimi Team
+
+
+
+Note: This email was sent from an unmonitored address. Please do not respond directly to this email. To contact us, visit https://ulimidoes.com/contact/.{% endblocktrans %}
