@@ -114,8 +114,8 @@ class CreateStaffAgencyForm(forms.Form):
     email_field = forms.EmailField(required=True)
     name_field = forms.CharField(required=True)
     notes_field = forms.CharField(required=False, widget=forms.Textarea)
-    regex = '^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-'\
-        '. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'
+    regex = r'^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-'\
+        r'. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$'
     phone_number_field = forms.RegexField(regex=regex, required=False)
 
     def save(self, user):
