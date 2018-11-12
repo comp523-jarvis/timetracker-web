@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import logging
 import uuid
 
@@ -851,6 +852,31 @@ class TimeRecord(models.Model):
             time record.
         """
         return hasattr(self, 'approval')
+
+    @property
+    def total_time(self):
+        """
+        Get the total time from this time record.
+        Returns:
+            The time delta between start time and end time
+            or delta of 0 if no end time.
+        """
+        if self.time_end:
+            return self.time_end - self.time_start
+        return datetime.timedelta(0)
+
+    @property
+    def projected_earnings(self):
+        """
+        Get the projected earning from this time record.
+
+        Returns:
+            The total time multiplied by
+            the pay rate for this job.
+        """
+        hours_dec = self.total_time.total_seconds() / (60*60)
+
+        return decimal.Decimal(hours_dec) * self.pay_rate
 
 
 class TimeRecordApproval(models.Model):

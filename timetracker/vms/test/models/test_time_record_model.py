@@ -93,3 +93,38 @@ def test_3_time_string_conversion(time_record_factory):
         f'{t.time_end:%I:%M %p} on {t.time_start:%m/%d/%Y}.'
     )
     assert str(t) == expected
+
+
+def test_total_time_no_end_time(time_record_factory):
+    """
+    Case with no end time
+    """
+    d = datetime.datetime(2018, 10, 1, 15, 26)
+    t = time_record_factory(time_start=d, time_end=None)
+    expected = datetime.timedelta(0)
+    assert t.total_time == expected
+
+
+def test_total_time_with_start_and_end_times(time_record_factory):
+    """
+    Case with start and end times. Same day, 9-5 workday
+    """
+    ts = datetime.datetime(2018, 10, 1, 9, 0)
+    te = datetime.datetime(2018, 10, 1, 17, 0)
+
+    t = time_record_factory(time_start=ts, time_end=te)
+
+    expected = te-ts
+
+    assert t.total_time == expected
+
+
+def test_total_time_projected_earnings(time_record_factory):
+    ts = datetime.datetime(2018, 10, 1, 9, 0)
+    te = datetime.datetime(2018, 10, 1, 17, 0)
+
+    t = time_record_factory(time_start=ts, time_end=te)
+
+    expected = (t.total_time.total_seconds() / (60*60)) * t.pay_rate
+
+    assert t.projected_earnings == expected

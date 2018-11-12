@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
+{% load humanize %}
+{% load time_record_tags %}
+
 {% block content %}
-<h2>You are{% if not clocked_in %} not{% endif %} currently clocked in.</h2>
+<h2>You are{% if not employee.is_clocked_in %} not{% endif %} currently clocked in.</h2>
   {% if employee.is_clocked_in %}
     <a class="btn btn-primary" href="{{ employee.clock_out_url }}">Clock Out {{ employee }}</a>
   {% else %}
@@ -27,6 +30,9 @@
         <th>Start Time</th>
         <th>End Time</th>
         <th>Approved</th>
+        <th>Pay Rate</th>
+        <th>Hours Worked</th>
+        <th>Projected Pay</th>
       </tr>
     </thead>
     <tbody>
@@ -41,6 +47,19 @@
             {% endif %}
           </td>
           <td>{% if record.is_approved %}✔{% else %}✗{% endif %}</td>
+          <td>{% if record.pay_rate %} pay rate is {{record.pay_rate}}{% else %}N/A{% endif %}</td>
+          <td>
+            {% if record.time_end %}
+              {{record.total_time | time_delta_as_hours}}
+            {% else %}
+              - in progress -
+            {% endif %}
+          </td>
+          <td>{% if record.time_end %}
+              ${{record.projected_earnings | floatformat:2 | intcomma }}
+            {% else %}
+              N/A
+            {% endif %}</td>
         </tr>
       {% endfor %}
     </tbody>
