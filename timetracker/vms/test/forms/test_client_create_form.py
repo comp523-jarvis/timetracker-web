@@ -7,7 +7,7 @@ from vms import forms
     'vms.models.ClientAdminInvite.send',
     autospec=True,
 )
-def test_save(mock_send, db):
+def test_save(mock_send, db, request_factory):
     """
     Saving the form should create a new client and send an email to the
     new administrator.
@@ -17,10 +17,11 @@ def test_save(mock_send, db):
         'email': 'client@example.com',
         'name': 'Acme Client Inc.',
     }
+    request = request_factory.get('/')
     form = forms.ClientCreateForm(data=data)
 
     assert form.is_valid()
-    client = form.save()
+    client = form.save(request)
     invite = client.admin_invites.get()
 
     assert client.email == data['email']
@@ -28,3 +29,4 @@ def test_save(mock_send, db):
 
     assert invite.email == data['admin_email']
     assert mock_send.call_count == 1
+    assert mock_send.call_args[0][1] == request

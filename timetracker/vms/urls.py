@@ -8,6 +8,11 @@ app_name = 'vms'
 
 client_detail_urls = [
     path(
+        'admin-invites/<token>/',
+        views.ClientAdminInviteAcceptView.as_view(),
+        name='client-admin-invite-accept',
+    ),
+    path(
         'employees/<int:employee_id>/clock-in/',
         views.ClockInView.as_view(),
         name='clock-in',

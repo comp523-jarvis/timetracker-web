@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Accept Admin Invite{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+      <h1 class="mb-5">Accept Admin Invite</h1>
+      <form method="post">
+        {{ form | crispy }}
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Accept</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

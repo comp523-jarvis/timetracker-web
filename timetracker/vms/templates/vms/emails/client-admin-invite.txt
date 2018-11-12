@@ -1,6 +1,6 @@
-{% load i18n %}{% blocktrans with client_name=client.name %}You have been invited to become an administrator at {{ client_name }}. Use the following token to accept this invitation:
+{% load i18n %}{% blocktrans with client_name=client.name %}You have been invited to become an administrator at {{ client_name }}. You may visit the following URL to accept the invitation:
 
-    {{ token }}
+    {{ accept_url }}
 
 If you do not want to accept this invitation, you may simply ignore this email.
 

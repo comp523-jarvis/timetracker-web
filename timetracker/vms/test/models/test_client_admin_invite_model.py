@@ -18,17 +18,19 @@ def test_accept(client_admin_invite_factory, user_factory):
     assert models.ClientAdminInvite.objects.count() == 0
 
 
-def test_send(client_admin_invite_factory, mailoutbox):
+def test_send(client_admin_invite_factory, request_factory, mailoutbox):
     """
     Sending the invitation should send an email to the email address
     attached to the invite.
     """
+    request = request_factory.get('/')
+
     invite = client_admin_invite_factory()
-    invite.send()
+    invite.send(request)
 
     context = {
+        'accept_url': f'{request.get_host()}{invite.accept_url}',
         'client': invite.client,
-        'token': invite.token,
     }
     expected_msg = render_to_string(
         'vms/emails/client-admin-invite.txt',

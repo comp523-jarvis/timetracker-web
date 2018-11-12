@@ -10,6 +10,44 @@ from vms import models
 logger = logging.getLogger(__name__)
 
 
+class ClientAdminInviteAcceptForm(forms.Form):
+    """
+    Form to accept an invitation to become a client admin.
+    """
+
+    def __init__(self, token, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.token = token
+        self.invite = None
+
+    def clean(self):
+        """
+        Ensure the provided token is valid.
+        """
+        query = models.ClientAdminInvite.objects.filter(token=self.token)
+
+        if not query.exists():
+            raise forms.ValidationError(
+                _('The provided invitation code is invalid.'),
+            )
+
+        self.invite = query.get()
+
+    def save(self, user):
+        """
+        Accept the invitation with the provided token.
+
+        Args:
+            user:
+                The user who is accepting the invitation.
+
+        Returns:
+            The newly created ``ClientAdmin`` instance.
+        """
+        return self.invite.accept(user)
+
+
 class ClientCreateForm(forms.ModelForm):
     """
     Form to create a new client.
@@ -30,9 +68,16 @@ class ClientCreateForm(forms.ModelForm):
         fields = ('name', 'email', 'phone_number', 'admin_email', 'notes')
         model = models.Client
 
-    def save(self, commit=True):
+    def save(self, request=None, commit=True):
         """
         Create a new client and send an email to the admin.
+
+        Args:
+            request:
+                The request made to trigger the form save.
+            commit:
+                A boolean indicating if the created model should be
+                saved to the database or not.
 
         Returns:
             The created client instance.
@@ -44,7 +89,7 @@ class ClientCreateForm(forms.ModelForm):
             client=client,
             email=admin_email,
         )
-        invite.send()
+        invite.send(request)
 
         return client
 

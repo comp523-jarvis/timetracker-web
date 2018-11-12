@@ -7,6 +7,44 @@ from django.views.generic import TemplateView, FormView, DetailView
 from vms import forms, models, time_utils
 
 
+class ClientAdminInviteAcceptView(LoginRequiredMixin, generic.FormView):
+    """
+    Accept in invitation to become an admin for a client.
+    """
+    form_class = forms.ClientAdminInviteAcceptForm
+    template_name = 'vms/client-admin-invite-accept.html'
+
+    def form_valid(self, form):
+        """
+        Save the form and redirect the user to the detail page of the
+        client that the created admin links to.
+
+        Args:
+            form:
+                The validated form instance to save.
+
+        Returns:
+            A redirect response sending the user to the detail view of
+            the created admin's client.
+        """
+        admin = form.save(self.request.user)
+
+        return redirect(admin.client.get_absolute_url())
+
+    def get_form_kwargs(self):
+        """
+        Get additional keyword arguments for the form.
+
+        Returns:
+            The keyword arguments used to initialize the form.
+        """
+        kwargs = super().get_form_kwargs()
+
+        kwargs['token'] = self.kwargs.get('token')
+
+        return kwargs
+
+
 class ClientCreateView(UserPassesTestMixin, generic.FormView):
     """
     Create a new client company.
@@ -23,7 +61,7 @@ class ClientCreateView(UserPassesTestMixin, generic.FormView):
             A redirect response sending the user to the detail page of
             the newly created client.
         """
-        client = form.save()
+        client = form.save(self.request)
 
         return redirect(client.get_absolute_url())
 

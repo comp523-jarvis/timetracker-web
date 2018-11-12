@@ -286,15 +286,31 @@ class ClientAdminInvite(models.Model):
 
         return admin
 
-    def send(self):
+    @property
+    def accept_url(self):
+        """
+        Returns:
+            The absolute URL of the view to accept the invite.
+        """
+        return reverse(
+            'vms:client-admin-invite-accept',
+            kwargs={'client_slug': self.client.slug, 'token': self.token},
+        )
+
+    def send(self, request):
         """
         Send an invitation message to the email address associated with
         the instance.
+
+        Args:
+            request:
+                The request that was made to trigger the send. This is
+                used to build the full URL for accepting the invite.
         """
         email_utils.send_email(
             context={
+                'accept_url': f'{request.get_host()}{self.accept_url}',
                 'client': self.client,
-                'token': self.token,
             },
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[self.email],
