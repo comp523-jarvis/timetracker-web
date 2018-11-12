@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ staffing_agency.name }}{% endblock %}
+
+{% block content %}
+
+ <h1>{{staffing_agency.name}}</h1>
+ <p>{{staffing_agency.notes}}</p>
+ <h2>List of employees associated with {{staffing_agency.name}}</h2>
+ {% for employee in staffing_agency.employees.all %}
+  <p><a class="btn btn-primary" href="{{ employee.get_absolute_url }}">{{employee.user.name}}</a></p>
+ {% endfor %}
+{% endblock %}

@@ -423,3 +423,27 @@ class UnapprovedTimeRecordListView(LoginRequiredMixin, generic.ListView):
         ).order_by(
             '-time_start',
         )
+
+
+class StaffingAgencyView(LoginRequiredMixin, generic.DetailView):
+    context_object_name = 'staffing_agency'
+    template_name = 'vms/staffing-agency.html'
+
+    def get_object(self):
+        return get_object_or_404(
+            models.StaffingAgency,
+            admin__user=self.request.user,
+            slug=self.kwargs.get('staffing_agency_slug'))
+
+
+class StaffingAgencyEmployeeView(LoginRequiredMixin, generic.DetailView):
+    context_object_name = 'staffing_agency_employee'
+    template_name = 'vms/staffing-agency-employee.html'
+
+    def get_object(self):
+        return get_object_or_404(
+            models.StaffingAgencyEmployee,
+            agency__admin__user=self.request.user,
+            id=self.kwargs.get('employee_id'),
+            agency__slug=self.kwargs.get('staffing_agency_slug')
+            )

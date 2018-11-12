@@ -50,6 +50,20 @@ client_detail_urls = [
 ]
 
 
+staff_detail_urls = [
+    path(
+        '',
+        views.StaffingAgencyView.as_view(),
+        name='staffing-agency-view',
+    ),
+    path(
+        'employees/<uuid:employee_id>/',
+        views.StaffingAgencyEmployeeView.as_view(),
+        name='staffing-agency-employee',
+    ),
+]
+
+
 urlpatterns = [
     path(
         'clients/<slug:client_slug>/',
@@ -63,7 +77,11 @@ urlpatterns = [
     path(
         'create-staffing-agency/',
         views.CreateStaffAgencyView.as_view(),
-        name='create-staff-agency'
+        name='create-staff-agency',
+    ),
+    path(
+        'staffing-agencies/<slug:staffing_agency_slug>/',
+        include(staff_detail_urls)
     ),
     path(
         'dashboard/',

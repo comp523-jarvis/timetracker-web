@@ -844,6 +844,19 @@ class StaffingAgencyEmployee(models.Model):
             f"{self.user.name} contracted by {self.agency.name}"
         )
 
+    def get_absolute_url(self):
+        """
+        Get the URL of the staffing agency's employee.
+
+        Returns:
+            The URL of the view where the staffing agency's employee
+            information is listed.
+        """
+        return reverse(
+            'vms:staffing-agency-employee',
+            kwargs={'staffing_agency_slug': self.agency.slug,
+                    'employee_id': self.id},)
+
 
 class TimeRecord(models.Model):
     """
