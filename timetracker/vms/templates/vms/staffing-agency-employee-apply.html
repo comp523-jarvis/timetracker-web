@@ -28,7 +28,7 @@
         </form>
       {% else %}
         <p class="alert alert-warning">
-          There are no clients left that the employee does not already work for.
+          There are no clients left that the employee does not already work for. As a staffing agency administrator, you may <a href="{% url 'vms:client-create' %}">register a new client</a>.
         </p>
       {% endif %}
     </div>
