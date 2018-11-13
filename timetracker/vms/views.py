@@ -1,6 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import DetailView, FormView, TemplateView
 
@@ -261,19 +260,6 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['total_hours'] = total_hours
 
         return context
-
-
-class CreateStaffAgencyView(LoginRequiredMixin, FormView):
-    """
-    View for creating a staffing agency
-    """
-    form_class = forms.CreateStaffAgencyForm
-    success_url = reverse_lazy('vms:dashboard')
-    template_name = 'vms/create-staff-agency.html'
-
-    def form_valid(self, form):
-        form.save(self.request.user)
-        return super().form_valid(form)
 
 
 class ClientDetailView(DetailView):

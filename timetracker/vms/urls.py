@@ -80,11 +80,6 @@ urlpatterns = [
         name='client-create',
     ),
     path(
-        'create-staffing-agency/',
-        views.CreateStaffAgencyView.as_view(),
-        name='create-staff-agency',
-    ),
-    path(
         'staffing-agencies/<slug:staffing_agency_slug>/',
         include(staff_detail_urls)
     ),

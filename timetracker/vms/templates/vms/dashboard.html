@@ -3,9 +3,6 @@
 {% block content %}
   <h1>Dashboard</h1>
   <h2>Quick Links</h2>
-  {% if request.user.is_staff %}
-    <a href="{% url 'vms:create-staff-agency' %}">create a staffing agency!</a>
-  {% endif %}
   {% if staff_admin %}
     <h2>Staff List</h2>
     <ul>
