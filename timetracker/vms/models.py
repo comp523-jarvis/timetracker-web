@@ -727,6 +727,16 @@ class StaffingAgency(models.Model):
         """
         return self.name
 
+    def get_absolute_url(self):
+        """
+        Returns:
+            The absolute URL of the instance's detail view.
+        """
+        return reverse(
+            'vms:staffing-agency-view',
+            kwargs={'staffing_agency_slug': self.slug},
+        )
+
 
 class StaffingAgencyAdmin(models.Model):
     """

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Apply Employee to Client{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12 col-md-8 offset-md-2">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-4">
+          <li class="breadcrumb-item"><a href="{{ employee.agency.get_absolute_url }}">{{ employee.agency.name }}</a></li>
+          <li class="breadcrumb-item"><a href="{{ employee.get_absolute_url }}">{{ employee.user.name }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Apply</li>
+        </ol>
+      </nav>
+
+      <h1>Apply Employee to Client</h1>
+      <p class="mb-5">
+        Apply an employee from the staffing agency to a client.
+      </p>
+      {% if available_clients %}
+        <form method="post">
+          {{ form | crispy }}
+          {% csrf_token %}
+          <button class="btn btn-primary" type="submit">Apply</button>
+        </form>
+      {% else %}
+        <p class="alert alert-warning">
+          There are no clients left that the employee does not already work for.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

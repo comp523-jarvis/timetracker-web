@@ -330,6 +330,83 @@ class ClientDetailView(DetailView):
         )
 
 
+class EmployeeApplyView(LoginRequiredMixin, generic.FormView):
+    """
+    Apply a staffing agency employee to a client company.
+    """
+    form_class = forms.EmployeeApplyForm
+    template_name = 'vms/staffing-agency-employee-apply.html'
+
+    def form_valid(self, form):
+        """
+        Save the form and redirect back to the staffing agency detail
+        view.
+
+        Args:
+            form:
+                The form to save.
+
+        Returns:
+            A response redirecting the user to the staffing agency's
+            detail view.
+        """
+        employee = form.save()
+
+        return redirect(employee.staffing_agency.get_absolute_url())
+
+    def get_context_data(self, **kwargs):
+        """
+        Get additional context used to render the view's template.
+
+        Args:
+            **kwargs:
+
+        Returns:
+            A dictionary containing the context used to render the
+            view's template.
+        """
+        context = super().get_context_data(**kwargs)
+
+        context['available_clients'] = models.Client.objects.exclude(
+            employee__staffing_agency=context['form'].staffing_agency,
+            employee__user=context['form'].user,
+        )
+
+        context['employee'] = get_object_or_404(
+            models.StaffingAgencyEmployee,
+            agency__admin__user=self.request.user,
+            agency__slug=self.kwargs.get('staffing_agency_slug'),
+            id=self.kwargs.get('employee_id'),
+        )
+
+        return context
+
+    def get_form_kwargs(self):
+        """
+        Get the keyword arguments to initialize the form with.
+
+        Returns:
+            A dictionary containing the arguments to initialize the
+            view's form instance with.
+        """
+        kwargs = super().get_form_kwargs()
+
+        agency = get_object_or_404(
+            models.StaffingAgency,
+            admin__user=self.request.user,
+            slug=self.kwargs.get('staffing_agency_slug'),
+        )
+        staff_employee = get_object_or_404(
+            agency.employees,
+            id=self.kwargs.get('employee_id'),
+        )
+
+        kwargs['staffing_agency'] = agency
+        kwargs['user'] = staff_employee.user
+
+        return kwargs
+
+
 class EmployeeDashView(LoginRequiredMixin, TemplateView):
     template_name = 'vms/employee-dash.html'
 
@@ -437,13 +514,38 @@ class StaffingAgencyView(LoginRequiredMixin, generic.DetailView):
 
 
 class StaffingAgencyEmployeeView(LoginRequiredMixin, generic.DetailView):
-    context_object_name = 'staffing_agency_employee'
+    context_object_name = 'employee'
     template_name = 'vms/staffing-agency-employee.html'
 
-    def get_object(self):
+    def get_context_data(self, **kwargs):
+        """
+        Get context data to render the view's template with.
+
+        Args:
+            **kwargs:
+
+        Returns:
+            A dictionary containing context to render the view's
+            template with.
+        """
+        context = super().get_context_data(**kwargs)
+
+        context['client_employees'] = models.Employee.objects.filter(
+            staffing_agency=self.object.agency,
+            user=self.object.user,
+        )
+
+        return context
+
+    def get_object(self, *args, **kwargs):
+        """
+        Returns:
+            The staffing agency employee whose ID is specified in the
+            URL.
+        """
         return get_object_or_404(
             models.StaffingAgencyEmployee,
             agency__admin__user=self.request.user,
+            agency__slug=self.kwargs.get('staffing_agency_slug'),
             id=self.kwargs.get('employee_id'),
-            agency__slug=self.kwargs.get('staffing_agency_slug')
-            )
+        )

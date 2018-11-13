@@ -215,6 +215,63 @@ class CreateStaffAgencyForm(forms.Form):
         )
 
 
+class EmployeeApplyForm(forms.ModelForm):
+    """
+    Form for applying an employee to a client company.
+    """
+
+    class Meta:
+        fields = ('client',)
+        model = models.Employee
+
+    def __init__(self, staffing_agency, user, *args, **kwargs):
+        """
+        Initialize the form.
+
+        Args:
+            staffing_agency:
+                The staffing agency to assign to the new employee.
+            user:
+                The user to associate with the new employee.
+            *args:
+                Positional arguments for the base form class.
+            **kwargs:
+                Keyword arguments for the base form class.
+        """
+        super().__init__(*args, **kwargs)
+
+        self.staffing_agency = staffing_agency
+        self.user = user
+
+        # Exclude any clients the user already works for
+        self.fields['client'].queryset = models.Client.objects.exclude(
+            employee__user=self.user,
+        )
+
+    def save(self, commit=True):
+        """
+        Save the new employee and attach the fields provided when the
+        form was created.
+
+        Args:
+            commit:
+                A boolean indicating if the created employee should be
+                saved to the database. Defaults to ``True``.
+
+        Returns:
+            The created employee.
+        """
+        employee = super().save(commit=False)
+
+        employee.staffing_agency = self.staffing_agency
+        employee.user = self.user
+
+        if commit:
+            employee.save()
+
+        return employee
+
+
 class TimeRecordApprovalForm(forms.Form):
     """
     Form to approve a time record.

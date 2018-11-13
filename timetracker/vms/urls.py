@@ -61,6 +61,11 @@ staff_detail_urls = [
         views.StaffingAgencyEmployeeView.as_view(),
         name='staffing-agency-employee',
     ),
+    path(
+        'employees/<uuid:employee_id>/apply/',
+        views.EmployeeApplyView.as_view(),
+        name='staffing-agency-employee-apply',
+    ),
 ]
 
 

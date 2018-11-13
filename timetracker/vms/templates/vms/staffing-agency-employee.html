@@ -1,7 +1,48 @@
 {% extends 'base.html' %}
 
+
+{% block title %}{{ employee.agency.name }} Employee {{ employee.user.name }}{% endblock %}
+
 {% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ employee.agency.get_absolute_url }}">{{ employee.agency.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ employee.user.name }}</li>
+    </ol>
+  </nav>
 
- <h1>Staffing Agency Employee page</h1>
+  <h1 class="mb-5">{{ employee.user.name }}</h1>
 
+  <div class="row mb-4">
+    <div class="col-sm-12 col-md-9 col-lg-8">
+      <h2 class="mb-sm-4">Employers</h2>
+    </div>
+    <div class="col-sm-12 col-md-3 col-lg-4 text-md-right">
+      <a class="btn btn-success" href="{% url 'vms:staffing-agency-employee-apply' employee.agency.slug employee.id %}">Apply to New Client</a>
+    </div>
+  </div>
+
+
+  {% if client_employees %}
+    <p class="mb-4">
+      Employers with a <span class="badge badge-success">success</span> header show the employee has been approved. Employers with a <span class="badge badge-warning">warning</span> header indicate the employee is awaiting approval.
+    </p>
+    <div class="row">
+      {% for client_emp in client_employees %}
+        <div class="col-sm-12 col-md-4">
+          <div class="card">
+            <h3 class="card-header {% if client_emp.time_approved %}bg-success text-light{% else %}bg-warning{% endif %}">{{ client_emp.client.name }}</h3>
+            <div class="card-body">
+              <p class="card-text">
+                <strong>Is Active:</strong> {{ client_emp.is_active | yesno:"Yes,No" }}
+              </p>
+              <a class="btn btn-outline-secondary btn-sm" href="{{ client_emp.get_absolute_url }}">Employee Details</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="alert alert-info">This employee does not work for any clients yet.</p>
+  {% endif %}
 {% endblock %}
