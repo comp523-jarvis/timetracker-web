@@ -425,24 +425,56 @@ class EmployeeApproveView(LoginRequiredMixin, FormView):
         )
 
 
-class EmployeeDashView(LoginRequiredMixin, TemplateView):
-    template_name = 'vms/employee-dash.html'
+class EmployeeDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name = 'vms/employee-detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        employee = models.Employee.objects.get(
-            client__slug=self.kwargs.get('client_slug'),
-            employee_id=self.kwargs.get('employee_id'),
-        )
-        context['employee'] = employee
+        open_time_record = self.object.time_records.filter(
+            time_end=None,
+        ).first()
+        context['open_time_record'] = open_time_record
 
-        seconds_worked = employee.total_time
+        context['is_employee'] = self.object.user == self.request.user
+
+        is_client_admin = models.ClientAdmin.objects.filter(
+            client=self.object.client,
+            user=self.request.user,
+        ).exists()
+        context['is_client_admin'] = is_client_admin
+
+        unapproved_count = self.object.time_records.filter(
+            approval=None,
+        ).exclude(
+            time_end=None,
+        ).count()
+        context['unapproved_count'] = unapproved_count
+
+        seconds_worked = self.object.total_time
         seconds_worked = time_utils.round_time_worked(seconds_worked)
         total_hours = seconds_worked / (60 * 60)
         context['total_hours'] = total_hours
 
         return context
+
+    def get_object(self, queryset=None):
+        """
+        Get the employee using the parameters in the URL.
+
+        Args:
+            queryset:
+                The queryset to pull from. If not provided, all
+                employees are searched.
+
+        Returns:
+            The employee with the ID and client slug specifieid in the
+            URL.
+        """
+        return models.Employee.objects.get(
+            client__slug=self.kwargs.get('client_slug'),
+            employee_id=self.kwargs.get('employee_id'),
+        )
 
 
 class PendingEmployeesView(LoginRequiredMixin, ListView):

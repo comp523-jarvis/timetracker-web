@@ -19,7 +19,7 @@ client_detail_urls = [
     ),
     path(
         'employees/<int:employee_id>/',
-        views.EmployeeDashView.as_view(),
+        views.EmployeeDetailView.as_view(),
         name='employee-dash',
     ),
     path(
