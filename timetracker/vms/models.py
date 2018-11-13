@@ -13,7 +13,7 @@ from django.utils.crypto import get_random_string
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _, ugettext
 
-from vms import id_utils
+from vms import id_utils, managers
 
 
 logger = logging.getLogger(__name__)
@@ -144,7 +144,7 @@ class Client(models.Model):
             The absolute URL of the instance's detail view.
         """
         return reverse(
-            'vms:client-view',
+            'vms:client-detail',
             kwargs={'client_slug': self.slug},
         )
 
@@ -606,14 +606,9 @@ class Employee(models.Model):
         Get the total time that the employee has logged.
 
         Returns:
-            The total time the employee has worked in seconds, rounded
-            to the nearest 15 minute increment.
+            The total time the employee has worked, in seconds.
         """
-        hours = datetime.timedelta(0)
-        for record in self.time_records.exclude(time_end=None):
-            hours += record.time_end - record.time_start
-
-        return hours.total_seconds()
+        return self.time_records.total_time().total_seconds()
 
     def save(self, *args, **kwargs):
         """
@@ -895,6 +890,9 @@ class TimeRecord(models.Model):
         help_text=_('The start time of the work period.'),
         verbose_name=_('start time'),
     )
+
+    # Use our custom manager
+    objects = managers.TimeRecordManager()
 
     class Meta:
         ordering = ('time_start',)

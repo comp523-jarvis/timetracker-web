@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+
+
+{% block title %}{{ client.name }}{% endblock %}
+
+{% block content %}
+  <div class="row">
+  <section class="col-sm-12 col-lg-6 mb-5 mb-lg-1" id="header">
+    <h1 class="display-4 mb-2">{{ client.name }}</h1>
+    <h2 class="h3 mb-0">Client ID: {{ client.id }}</h2>
+    <p class="text-muted small">Employees use this ID to identify the company when clocking in.</p>
+  </section>
+
+  <section class="col-sm-12 col-lg-6" id="contact">
+    <div class="card">
+      <h2 class="card-header">Contact</h2>
+      <div class="card-body">
+        <p class="card-text"><strong>Email:</strong> <a href="mailto:{{ client.email }}" target="_blank">{{ client.email }}</a></p>
+        {% if client.phone_number %}
+          <p class="card-text"><strong>Phone:</strong> {{ client.phone_number }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <hr class="my-5">
+
+  <section id="overview">
+    <h2 class="text-center mb-5">Company Overview</h2>
+
+    <div class="row text-center">
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-3 mb-lg-4">
+        <div class="card">
+          <h3 class="card-header bg-secondary text-light">Active Employees</h3>
+          <div class="card-body">
+            <h4 id="active-employees">0</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-3 mb-lg-4">
+        <div class="card">
+          <h3 class="card-header bg-secondary text-light">Tracked Projects</h3>
+          <div class="card-body">
+            <h4 id="job-count">0</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-12 col-lg-4 mb-3">
+        <div class="card">
+          <h3 class="card-header bg-secondary text-light">Total Hours</h3>
+          <div class="card-body">
+            <h4 id="total-hours">0</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="my-5">
+
+  <section class="manage">
+    <h2 class="text-center mb-5">Manage Company</h2>
+    <div class="row">
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card">
+          <h3 class="card-header text-center">Jobs</h3>
+          <div class="card-body">
+            <p class="card-text">
+              Manage the jobs that employees can clock in to. Add new jobs or edit the pay rates and descriptions of existing ones.
+            </p>
+            <a class="btn btn-primary" href="{{ client.job_list_url }}">Manage Jobs</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="https://unpkg.com/countup.js@1.9.3/dist/countUp.min.js"></script>
+  <script>
+    (function() {
+      var countUpOptions = {
+        useEasing: true,
+        useGrouping: true,
+        separator: ',',
+      };
+
+      function createCounter(target, total) {
+        var counter = new CountUp(target, 0, total, 0, 5, countUpOptions);
+        if (!counter.error) {
+          counter.start();
+        } else {
+          console.error(counter.error);
+        }
+      }
+
+      createCounter('active-employees', {{ active_employees }});
+      createCounter('job-count', {{ job_count }});
+      createCounter('total-hours', {{ total_hours }});
+    })()
+  </script>
+{% endblock %}
+

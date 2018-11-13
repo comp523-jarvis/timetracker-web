@@ -1,5 +1,9 @@
 import datetime
 
+from django.utils import timezone
+
+from vms import models
+
 
 def test_is_approved_no_approval(time_record_factory):
     """
@@ -20,6 +24,51 @@ def test_is_approved_with_approval(time_record_approval_factory):
     record = approval.time_record
 
     assert record.is_approved
+
+
+def test_queryset_with_deltas(time_record_factory):
+    """
+    This queryset method should annotate all completed time records
+    with the delta between their start and end times.
+    """
+    now = timezone.now()
+    time_record_factory(time_start=now)
+    t1 = time_record_factory(
+        time_end=now + datetime.timedelta(days=1),
+        time_start=now,
+    )
+    t2 = time_record_factory(
+        time_end=now + datetime.timedelta(hours=1),
+        time_start=now,
+    )
+
+    records = models.TimeRecord.objects.with_deltas()
+
+    # Only records with an end time should be included
+    assert list(records) == [t1, t2]
+
+    # Each record should be annotated with its delta
+    for record in records:
+        assert record.delta == record.time_end - record.time_start
+
+
+def test_queryset_total_time(time_record_factory):
+    """
+    This queryset method should return the sum of the deltas of each of
+    the time records in the queryset.
+    """
+    now = timezone.now()
+    later = now + datetime.timedelta(hours=1)
+
+    time_record_factory(time_end=later, time_start=now)
+    time_record_factory(time_end=later, time_start=now)
+
+    expected = sum(
+        (record.delta for record in models.TimeRecord.objects.with_deltas()),
+        datetime.timedelta(0),
+    )
+
+    assert models.TimeRecord.objects.total_time() == expected
 
 
 def test_repr_with_job(time_record_factory):

@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
-from django.views.generic import TemplateView, FormView, DetailView
+from django.views.generic import DetailView, FormView, TemplateView
 
 from vms import forms, models, time_utils
 
@@ -276,14 +276,58 @@ class CreateStaffAgencyView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class ClientView(DetailView):
+class ClientDetailView(DetailView):
+    """
+    Retrieve information about a specific client.
+    """
     context_object_name = 'client'
-    template_name = 'vms/clientview.html'
+    template_name = 'vms/client-detail.html'
 
-    def get_object(self):
+    def get_context_data(self, **kwargs):
+        """
+        Get additional context to render the template with.
+
+        Args:
+            **kwargs:
+                Additional values to be passed to the template.
+
+        Returns:
+            A dictionary containing the context used to render the
+            view's template.
+        """
+        context = super().get_context_data(**kwargs)
+
+        context['active_employees'] = self.object.employees.filter(
+            is_active=True,
+        ).count()
+
+        context['job_count'] = self.object.jobs.count()
+
+        total_time = models.TimeRecord.objects.filter(
+            employee__client=self.object,
+        ).total_time()
+        context['total_hours'] = total_time.total_seconds() / (60 * 60)
+
+        return context
+
+    def get_object(self, queryset=None):
+        """
+        Get the client whose slug is specified in the URL.
+
+        Args:
+            queryset:
+                The queryset to choose a client from. If a queryset is
+                not provided, all clients are searched.
+
+        Returns:
+            The client with the slug given in the URL.
+        """
+        queryset = queryset or models.Client.objects.all()
+
         return get_object_or_404(
-            models.Client,
-            slug=self.kwargs.get('client_slug'))
+            queryset,
+            slug=self.kwargs.get('client_slug'),
+        )
 
 
 class EmployeeDashView(LoginRequiredMixin, TemplateView):

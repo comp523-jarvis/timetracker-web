@@ -44,8 +44,8 @@ client_detail_urls = [
     ),
     path(
         '',
-        views.ClientView.as_view(),
-        name='client-view',
+        views.ClientDetailView.as_view(),
+        name='client-detail',
     ),
 ]
 
