@@ -71,6 +71,13 @@ def test_queryset_total_time(time_record_factory):
     assert models.TimeRecord.objects.total_time() == expected
 
 
+def test_queryset_total_time_no_records(db):
+    """
+    If there are no time records, an empty timedelta should be returned.
+    """
+    assert models.TimeRecord.objects.total_time() == datetime.timedelta(0)
+
+
 def test_repr_with_job(time_record_factory):
     """
     Getting the repr of a time record should return a string with the

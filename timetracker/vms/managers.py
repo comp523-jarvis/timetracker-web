@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.db.models import F, ExpressionWrapper, DurationField, Sum
 
@@ -29,6 +31,9 @@ class TimeRecordQuerySet(models.QuerySet):
             expressed as a ``datetime.timedelta`` instance.
         """
         aggregate = self.with_deltas().aggregate(sum=Sum('delta'))
+
+        if aggregate['sum'] is None:
+            return datetime.timedelta(0)
 
         return aggregate['sum']
 
