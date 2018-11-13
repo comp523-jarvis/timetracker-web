@@ -550,6 +550,20 @@ class Employee(models.Model):
         self.save()
 
     @property
+    def approve_url(self):
+        """
+        Returns:
+            The absolute URL of the view used to approve the employee.
+        """
+        return reverse(
+            'vms:employee-approval',
+            kwargs={
+                'client_slug': self.client.slug,
+                'employee_id': self.employee_id,
+            },
+        )
+
+    @property
     def clock_in_url(self):
         """
         Returns:

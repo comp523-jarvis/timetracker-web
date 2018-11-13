@@ -248,6 +248,23 @@ class EmployeeApplyForm(forms.ModelForm):
         return employee
 
 
+class EmployeeApprovalForm(forms.Form):
+    """
+    Form to link Employee to Supervisor
+    """
+    supervisor = forms.ModelChoiceField(queryset=None)
+
+    def __init__(self, employee, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['supervisor'].queryset = employee.client.admins.all()
+        self.employee = employee
+
+    def save(self, admin):
+        self.employee.approve(admin)
+        self.employee.supervisor = self.cleaned_data['supervisor']
+        self.employee.save()
+
+
 class TimeRecordApprovalForm(forms.Form):
     """
     Form to approve a time record.

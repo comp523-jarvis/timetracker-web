@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
-from django.views.generic import DetailView, FormView, TemplateView
+from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from vms import forms, models, time_utils
 
@@ -393,6 +393,38 @@ class EmployeeApplyView(LoginRequiredMixin, generic.FormView):
         return kwargs
 
 
+class EmployeeApproveView(LoginRequiredMixin, FormView):
+    """
+    Can link a supervisor to an approved employee.
+    """
+    template_name = 'vms/employee-approval.html'
+    form_class = forms.EmployeeApprovalForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        kwargs['employee'] = get_object_or_404(
+            models.Employee,
+            client__slug=self.kwargs.get('client_slug'),
+            employee_id=self.kwargs.get('employee_id')
+        )
+
+        return kwargs
+
+    def form_valid(self, form):
+        admin = get_object_or_404(
+            models.ClientAdmin,
+            client__slug=self.kwargs.get('client_slug'),
+            user=self.request.user
+        )
+        form.save(admin)
+
+        return redirect(
+            'vms:employee-pending',
+            client_slug=admin.client.slug,
+        )
+
+
 class EmployeeDashView(LoginRequiredMixin, TemplateView):
     template_name = 'vms/employee-dash.html'
 
@@ -411,6 +443,29 @@ class EmployeeDashView(LoginRequiredMixin, TemplateView):
         context['total_hours'] = total_hours
 
         return context
+
+
+class PendingEmployeesView(LoginRequiredMixin, ListView):
+    """
+    Can see the list of pending employees that need to be approved or stopped
+    """
+    context_object_name = 'pending_employees'
+    template_name = 'vms/employee-pending.html'
+
+    def get_queryset(self):
+        """
+        Get the jobs for the specified client.
+
+        Returns:
+            The jobs owned by the client whose slug is given in the URL.
+        """
+        client = get_object_or_404(
+            models.Client,
+            slug=self.kwargs.get('client_slug'),
+            admin__user=self.request.user,
+        )
+
+        return client.employees.filter(time_approved=None)
 
 
 class TimeRecordApproveView(LoginRequiredMixin, generic.FormView):
@@ -492,11 +547,12 @@ class StaffingAgencyView(LoginRequiredMixin, generic.DetailView):
     context_object_name = 'staffing_agency'
     template_name = 'vms/staffing-agency.html'
 
-    def get_object(self):
+    def get_object(self, **kwargs):
         return get_object_or_404(
             models.StaffingAgency,
             admin__user=self.request.user,
-            slug=self.kwargs.get('staffing_agency_slug'))
+            slug=self.kwargs.get('staffing_agency_slug'),
+        )
 
 
 class StaffingAgencyEmployeeView(LoginRequiredMixin, generic.DetailView):

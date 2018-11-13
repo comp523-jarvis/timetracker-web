@@ -13,6 +13,21 @@ client_detail_urls = [
         name='client-admin-invite-accept',
     ),
     path(
+        'employees/pending/',
+        views.PendingEmployeesView.as_view(),
+        name='employee-pending'
+    ),
+    path(
+        'employees/<int:employee_id>/',
+        views.EmployeeDashView.as_view(),
+        name='employee-dash',
+    ),
+    path(
+        'employees/<int:employee_id>/approve/',
+        views.EmployeeApproveView.as_view(),
+        name='employee-approval',
+    ),
+    path(
         'employees/<int:employee_id>/clock-in/',
         views.ClockInView.as_view(),
         name='clock-in',
@@ -21,11 +36,6 @@ client_detail_urls = [
         'employees/<int:employee_id>/clock-out/',
         views.ClockOutView.as_view(),
         name='clock-out',
-    ),
-    path(
-        'employees/<int:employee_id>/',
-        views.EmployeeDashView.as_view(),
-        name='employee-dash',
     ),
     path(
         'jobs/',

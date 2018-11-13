@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% block title %}Pending Employees: Approve or Deny{% endblock %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Approve</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for employee in pending_employees %}
+      <tr>
+        <td>{{ employee.user.name }}</td>
+        <td>
+          <a class="btn btn-primary btn-sm" href="{{ employee.approve_url }}">Approve</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
