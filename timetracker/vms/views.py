@@ -249,7 +249,13 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 user=self.request.user).exists():
             adminagency = models.StaffingAgencyAdmin.objects.filter(
                 user=self.request.user)
-            context['staff_admin'] = adminagency
+            context['staff_admins'] = adminagency
+
+        if models.ClientAdmin.objects.filter(
+                user=self.request.user).exists():
+            client_admins = models.ClientAdmin.objects.filter(
+                user=self.request.user).all()
+            context['client_admins'] = client_admins
 
         clocked_in = any([e.is_clocked_in for e in employees])
         context['clocked_in'] = clocked_in

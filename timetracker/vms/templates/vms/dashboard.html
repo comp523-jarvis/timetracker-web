@@ -3,15 +3,26 @@
 {% block content %}
   <h1>Dashboard</h1>
   <h2>Quick Links</h2>
-  {% if staff_admin %}
-    <h2>Staff List</h2>
+  {% if staff_admins %}
+    <h3>Staff List</h3>
     <ul>
-        {% for staff in staff_admin %}
-          <li>{{ staff.agency }}</li>
+        {% for admin in staff_admins %}
+          <li>{{ admin.agency }}<a href="{{ admin.agency.get_absolute_url }}"> Go to staffing agency page.</a></li>
         {% endfor %}
     </ul>
   {% endif %}
-  {% for employee in employees %}
-    <a href="{{ employee.get_absolute_url }}"> Go to employee page, {{ employee }}</a>
-  {% endfor %}
+  {% if client_admins %}
+  <h3>Client List</h3>
+    <ul>
+        {% for client_admin in client_admins %}
+          <li>{{ client_admin.client.name }}<a href="{{ client_admin.client.get_absolute_url }}"> Go to client page.</a></li>
+        {% endfor %}
+    </ul>
+  {% endif %}
+  {% if employees %}
+  <h3>Employee List</h3>
+    {% for employee in employees %}
+      {{ employee }}, working for {{ employee.client.name}}: <a href="{{ employee.get_absolute_url }}">Go to employee page.</a></br>
+    {% endfor %}
+  {% endif %}
 {% endblock %}
