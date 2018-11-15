@@ -293,6 +293,12 @@ class ClientDetailView(DetailView):
             is_active=True,
         ).count()
 
+        context['is_admin'] = (
+            self.request.user.is_authenticated and self.object.admins.filter(
+                user=self.request.user,
+            ).exists()
+        )
+
         context['job_count'] = self.object.jobs.count()
 
         total_time = models.TimeRecord.objects.filter(

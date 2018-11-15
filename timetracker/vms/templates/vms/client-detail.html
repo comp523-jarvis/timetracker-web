@@ -26,57 +26,90 @@
   </section>
   </div>
 
-  <hr class="my-5">
+  {% if is_admin %}
 
-  <section id="overview">
-    <h2 class="text-center mb-5">Company Overview</h2>
+    <hr class="my-5">
 
-    <div class="row text-center">
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-3 mb-lg-4">
-        <div class="card">
-          <h3 class="card-header bg-secondary text-light">Active Employees</h3>
-          <div class="card-body">
-            <h4 id="active-employees">0</h4>
+    <section id="overview">
+      <h2 class="text-center mb-5">Company Overview</h2>
+
+      <div class="row text-center">
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-3 mb-lg-4">
+          <div class="card border-primary">
+            <h3 class="h4 card-header bg-primary text-light">Active Employees</h3>
+            <div class="card-body">
+              <h4 id="active-employees">0</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-6 col-lg-4 mb-3 mb-lg-4">
+          <div class="card border-primary">
+            <h3 class="h4 card-header bg-primary text-light">Different Jobs</h3>
+            <div class="card-body">
+              <h4 id="job-count">0</h4>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-lg-4 mb-3">
+          <div class="card border-primary">
+            <h3 class="h4 card-header bg-primary text-light">Total Hours</h3>
+            <div class="card-body">
+              <h4 id="total-hours">0</h4>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-sm-12 col-md-6 col-lg-4 mb-3 mb-lg-4">
-        <div class="card">
-          <h3 class="card-header bg-secondary text-light">Tracked Projects</h3>
-          <div class="card-body">
-            <h4 id="job-count">0</h4>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-12 col-lg-4 mb-3">
-        <div class="card">
-          <h3 class="card-header bg-secondary text-light">Total Hours</h3>
-          <div class="card-body">
-            <h4 id="total-hours">0</h4>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <hr class="my-5">
+    <hr class="my-5">
 
-  <section class="manage">
-    <h2 class="text-center mb-5">Manage Company</h2>
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4">
-        <div class="card">
-          <h3 class="card-header text-center">Jobs</h3>
-          <div class="card-body">
-            <p class="card-text">
-              Manage the jobs that employees can clock in to. Add new jobs or edit the pay rates and descriptions of existing ones.
-            </p>
-            <a class="btn btn-primary" href="{{ client.job_list_url }}">Manage Jobs</a>
+    <section class="manage">
+      <h2 class="text-center mb-5">Manage Company</h2>
+      <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4">
+          <div class="card h-100">
+            <h3 class="card-header text-center">Jobs</h3>
+            <div class="card-body">
+              <p class="card-text">
+                Manage the jobs that employees can clock in to. Add new jobs or edit the pay rates and descriptions of existing ones.
+              </p>
+            </div>
+            <div class="card-footer">
+              <a class="btn btn-block btn-sm btn-primary" href="{{ client.job_list_url }}">Manage Jobs</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4">
+          <div class="card h-100">
+            <h3 class="card-header text-center">Approve Hours</h3>
+            <div class="card-body">
+              <p class="card-text">
+                Approve time records submitted by employees.
+              </p>
+            </div>
+            <div class="card-footer">
+              <a class="btn btn-block btn-sm btn-primary" href="{% url 'vms:unapproved-time-record-list' client.slug %}">Approve Time Records</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4">
+          <div class="card h-100">
+            <h3 class="card-header text-center">Pending Employees</h3>
+            <div class="card-body">
+              <p class="card-text">
+                View and approve the employees applied to {{ client.name }} by staffing agencies.
+              </p>
+            </div>
+            <div class="card-footer">
+              <a class="btn btn-block btn-sm btn-primary" href="{% url 'vms:employee-pending' client.slug %}">View Pending Employees</a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  {% endif %}
 {% endblock %}
 
 {% block extra_scripts %}
