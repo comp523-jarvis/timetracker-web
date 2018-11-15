@@ -29,17 +29,18 @@
   {% endif %}
    {{ unapproved_count }} unapproved time record{{ unapproved_count | pluralize }}.{% if not unapproved_count %} You are all up to date!{% endif %}</p>
   <h4>{{ employee }}</h4>
-  <table class="table text-center">
+  <table class="table">
     <thead>
       <tr>
-        <th>Start Time</th>
-        <th>End Time</th>
-        <th>Approved</th>
-        <th>Pay Rate</th>
-        <th>Hours Worked</th>
-        <th>Projected Pay</th>
+        <th scope="col">Start Time</th>
+        <th scope="col">End Time</th>
+        <th scope="col">Job</th>
+        <th scope="col">Pay Rate</th>
+        <th scope="col">Duration</th>
+        <th scope="col">Projected Pay</th>
+        <th scope="col">Approved</th>
         {% if is_client_admin %}
-        <th>Approve Time Record</th>
+          <th scope="col">Approve</th>
         {% endif %}
       </tr>
     </thead>
@@ -51,33 +52,36 @@
             {% if record.time_end %}
               {{ record.time_end|date:'n/j/Y g:i a' }}
             {% else %}
-              - in progress -
+              -
             {% endif %}
           </td>
-          <td>{% if record.is_approved %}✔{% else %}✗{% endif %}</td>
-          <td>{% if record.pay_rate %} pay rate is {{record.pay_rate}}{% else %}N/A{% endif %}</td>
+          <td>{{ record.job.name }}</td>
+          <td>${{ record.pay_rate | floatformat:2 | intcomma }}</td>
           <td>
             {% if record.time_end %}
               {{record.total_time | time_delta_as_hours}}
             {% else %}
-              - in progress -
+              -
             {% endif %}
           </td>
           <td>{% if record.time_end %}
               ${{record.projected_earnings | floatformat:2 | intcomma }}
             {% else %}
-              N/A
+              -
             {% endif %}
           </td>
+          <td class="text-center">{% if record.is_approved %}✔{% else %}✗{% endif %}</td>
           {% if is_client_admin %}
           <td>
-            {% if not record.is_approved %}
-              <form action="{{record.approval_url}}" method="post">
+            {% if not record.is_approved and record.time_end %}
+              <form action="{{ record.approval_url }}?next={{ employee.get_absolute_url }}" method="post">
                 {% csrf_token %}
-                <button class="btn btn-secondary btn-sm" type="submit">
+                <button class="btn btn-outline-success btn-sm" type="submit">
                   Approve
                 </button>
               </form>
+            {% elif not record.time_end %}
+              <span class="badge badge-secondary">In Progress</span>
             {% else %}
               <span class="badge badge-success">Approved</span>
             {% endif %}

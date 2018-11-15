@@ -229,7 +229,7 @@ class ClockOutView(LoginRequiredMixin, FormView):
 
         kwargs['employee'] = get_object_or_404(
             models.Employee,
-            supervisor__client__slug=self.kwargs.get('client_slug'),
+            client__slug=self.kwargs.get('client_slug'),
             employee_id=self.kwargs.get('employee_id'),
             user=self.request.user,
         )
@@ -432,6 +432,7 @@ class EmployeeApproveView(LoginRequiredMixin, FormView):
 
 
 class EmployeeDetailView(LoginRequiredMixin, generic.DetailView):
+    context_object_name = 'employee'
     template_name = 'vms/employee-detail.html'
 
     def get_context_data(self, **kwargs):
@@ -521,10 +522,18 @@ class TimeRecordApproveView(LoginRequiredMixin, generic.FormView):
                 The valid form instance to save.
 
         Returns:
-            A redirect response back to the list of unapproved hours for
-            the client.
+            A redirect response. If a 'next' parameter is provided in
+            the URL, the user is taken to that URL. Otherwise they are
+            taken to the list of unapproved hours for the client who
+            owns the time record that was just approved.
         """
         approval = form.save()
+
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return redirect(next_url)
+
+        # No redirect specified, default to unapproved hours list.
         client = approval.time_record.employee.client
 
         return redirect(
