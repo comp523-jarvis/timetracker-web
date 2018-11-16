@@ -6,15 +6,21 @@
 {% block title %}{{ client.name }} Jobs{% endblock %}
 
 {% block content %}
-  <nav aria-label="breadcrumb">
+  <nav aria-label="breadcrumb" class="mb-5">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{{ client.get_absolute_url }}">{{ client.name }}</a></li>
       <li class="breadcrumb-item active" aria-current="page">Jobs</li>
     </ol>
   </nav>
 
-  <h1 class="mb-5">{{ client.name }} Jobs</h1>
-
+  <div class="row mb-5">
+    <div class="col-sm-12 col-md-9 mb-3 mb-md-0">
+      <h1 class="m-0">{{ client.name }} Jobs</h1>
+    </div>
+    <div class="col-sm-12 col-md-3 d-flex align-items-center">
+      <a class="btn btn-block btn-primary btn-sm" href="{% url 'vms:client-job-create' client.slug %}">Create Job</a>
+    </div>
+  </div>
   <table class="table">
     <thead>
       <tr>

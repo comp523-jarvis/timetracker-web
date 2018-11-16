@@ -43,6 +43,11 @@ client_detail_urls = [
         name='client-job-list',
     ),
     path(
+        'jobs/create/',
+        views.ClientJobCreateView.as_view(),
+        name='client-job-create',
+    ),
+    path(
         'jobs/<slug:job_slug>/',
         views.ClientJobDetailView.as_view(),
         name='client-job-detail',

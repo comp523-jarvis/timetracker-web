@@ -81,6 +81,38 @@ class ClientCreateView(UserPassesTestMixin, generic.FormView):
         ).exists()
 
 
+class ClientJobCreateView(LoginRequiredMixin, FormView):
+    template_name = 'vms/client-job-create.html'
+    form_class = forms.ClientJobCreate
+
+    def form_valid(self, form):
+        job = form.save()
+
+        return redirect(job.get_absolute_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        client = get_object_or_404(
+            models.Client.objects,
+            slug=self.kwargs.get('client_slug')
+        )
+
+        context['client'] = client
+
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        kwargs['client'] = get_object_or_404(
+            models.Client.objects,
+            slug=self.kwargs.get('client_slug'),
+        )
+
+        return kwargs
+
+
 class ClientJobDetailView(LoginRequiredMixin, generic.UpdateView):
     """
     View or update the details of a specific client job.
@@ -394,6 +426,7 @@ class EmployeeApplyView(LoginRequiredMixin, generic.FormView):
             admin__user=self.request.user,
             slug=self.kwargs.get('staffing_agency_slug'),
         )
+
         staff_employee = get_object_or_404(
             agency.employees,
             id=self.kwargs.get('employee_id'),

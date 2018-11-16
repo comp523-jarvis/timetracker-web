@@ -94,6 +94,25 @@ class ClientCreateForm(forms.ModelForm):
         return client
 
 
+class ClientJobCreate(forms.ModelForm):
+    """
+    Form to create a new client job.
+    """
+
+    class Meta:
+        fields = ('client', 'name', 'pay_rate', 'description')
+        model = models.ClientJob
+
+    def __init__(self, client, *args, **kwargs):
+        kwargs.get('initial', {}).update({
+            'client': client,
+        })
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['client'].widget = forms.HiddenInput()
+
+
 class ClockInForm(forms.Form):
     """
     Form to clock in the requesting user.

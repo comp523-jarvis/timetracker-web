@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Create Job{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12 col-md-8 offset-md-2">
+      <h1 class="mb-5">Create Job</h1>
+      <form method="post">
+        {{ form | crispy }}
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Create Job</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}
