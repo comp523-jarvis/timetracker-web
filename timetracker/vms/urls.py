@@ -68,18 +68,28 @@ client_detail_urls = [
 staff_detail_urls = [
     path(
         '',
-        views.StaffingAgencyView.as_view(),
+        views.StaffingAgencyDetailView.as_view(),
         name='staffing-agency-view',
     ),
     path(
+        'employees/pending/',
+        views.StaffingAgencyEmployeePendingListView.as_view(),
+        name='staffing-agency-employee-pending',
+    ),
+    path(
         'employees/<uuid:employee_id>/',
-        views.StaffingAgencyEmployeeView.as_view(),
+        views.StaffingAgencyEmployeeDetailView.as_view(),
         name='staffing-agency-employee',
     ),
     path(
         'employees/<uuid:employee_id>/apply/',
         views.EmployeeApplyView.as_view(),
         name='staffing-agency-employee-apply',
+    ),
+    path(
+        'employees/<uuid:employee_id>/approve/',
+        views.StaffingAgencyEmployeeApproveView.as_view(),
+        name='staffing-agency-employee-approve',
     ),
 ]
 
@@ -107,5 +117,10 @@ urlpatterns = [
         'time-records/<uuid:time_record_id>/approve/',
         views.TimeRecordApproveView.as_view(),
         name='time-record-approve',
+    ),
+    path(
+        'create-staff-employee/',
+        views.StaffingAgencyEmployeeCreateView.as_view(),
+        name='create-staff-employee',
     ),
 ]

@@ -868,6 +868,28 @@ class StaffingAgencyEmployee(models.Model):
             f"{self.user.name} contracted by {self.agency.name}"
         )
 
+    def approve(self, admin):
+        """
+        Mark the staffing agency employee as approved.
+
+        Args:
+            admin:
+                The staffing agency administrator who approved the
+                employee.
+        """
+        if self.is_approved:
+            logger.warning(
+                'Approving already approved staffing agency employee: %r',
+                self,
+            )
+
+        self.approved_by = admin
+        self.is_approved = True
+        self.time_approved = timezone.now()
+        self.save()
+
+        logger.info('Approved staffing agency employee: %r', self)
+
     def get_absolute_url(self):
         """
         Get the URL of the staffing agency's employee.

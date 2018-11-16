@@ -284,6 +284,98 @@ class EmployeeApprovalForm(forms.Form):
         self.employee.save()
 
 
+class StaffingAgencyEmployeeCreateForm(forms.Form):
+    """
+    Form to create a staffing agency employee.
+    """
+    staffing_agency = forms.ModelChoiceField(queryset=None)
+
+    def __init__(self, user, *args, **kwargs):
+        """
+        Initialize the form with a user.
+
+        Args:
+            user:
+                The user to apply to a staffing agency.
+            *args:
+            **kwargs:
+        """
+        super().__init__(*args, **kwargs)
+
+        self.user = user
+
+        agencies = models.StaffingAgency.objects.exclude(
+            employee__user=user,
+        )
+        self.fields['staffing_agency'].queryset = agencies
+
+    def save(self, user):
+        """
+        Create a new staffing agency employee.
+
+        Args:
+            user:
+                The user to associate with the employee that is created.
+
+        Returns:
+            The newly created staffing agency employee.
+        """
+        return models.StaffingAgencyEmployee.objects.create(
+            agency=self.cleaned_data['staffing_agency'],
+            user=user,
+        )
+
+
+class StaffingAgencyEmployeeApprovalForm(forms.Form):
+    """
+    Form to approve a staff employee
+    """
+
+    def __init__(self, employee, admin, *args, **kwargs):
+        """
+        Initialize the form with the employee being approved and the
+        admin doing the approval.
+
+        Args:
+            employee:
+                The staffing agency employee to approve.
+            admin:
+                The staffing agency administrator doing the approval.
+            *args:
+            **kwargs:
+        """
+        super().__init__(*args, **kwargs)
+
+        self.employee = employee
+        self.admin = admin
+
+    def clean(self):
+        """
+        Ensure the employee and admin are associated with the same
+        staffing agency.
+
+        Returns:
+            The cleaned data.
+        """
+        cleaned_data = super().clean()
+
+        if not self.admin.agency == self.employee.agency:
+            raise forms.ValidationError(
+                _(
+                    "The staffing agency administrator may only approve "
+                    "employees who have applied to the same agency."
+                )
+            )
+
+        return cleaned_data
+
+    def save(self):
+        """
+        Approve the staffing agency employee associated with the form.
+        """
+        self.employee.approve(self.admin)
+
+
 class TimeRecordApprovalForm(forms.Form):
     """
     Form to approve a time record.

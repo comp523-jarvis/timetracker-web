@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 from django.views.generic import DetailView, FormView, ListView, TemplateView
+from django.urls import reverse_lazy
 
 from vms import forms, models, time_utils
 
@@ -375,7 +376,6 @@ class EmployeeApplyView(LoginRequiredMixin, generic.FormView):
         Args:
             form:
                 The form to save.
-
         Returns:
             A response redirecting the user to the staffing agency's
             detail view.
@@ -543,7 +543,202 @@ class PendingEmployeesView(LoginRequiredMixin, ListView):
             admin__user=self.request.user,
         )
 
-        return client.employees.filter(time_approved=None)
+        return client.employees.filter(is_approved=False)
+
+
+class StaffingAgencyDetailView(generic.DetailView):
+    """
+    Retrieve information about a specific staffing agency.
+    """
+    context_object_name = 'staffing_agency'
+    template_name = 'vms/staffing-agency.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['is_admin'] = (
+            self.request.user.is_authenticated
+            and self.object.admins.filter(
+                user=self.request.user,
+            ).exists()
+        )
+
+        return context
+
+    def get_object(self, **kwargs):
+        return get_object_or_404(
+            models.StaffingAgency,
+            slug=self.kwargs.get('staffing_agency_slug'),
+        )
+
+
+class StaffingAgencyEmployeeApproveView(LoginRequiredMixin, generic.FormView):
+    """
+    Approve an employee who has applied to a staffing agency.
+    """
+    form_class = forms.StaffingAgencyEmployeeApprovalForm
+
+    def form_valid(self, form):
+        """
+        Save the form and redirect the user.
+
+        Args:
+            form:
+                The form to save.
+
+        Returns:
+            A response redirecting the user. If a ``next`` parameter is
+            provided in the URL, the user is redirected there. Otherwise
+            they are redirected to the list of pending employees.
+        """
+        form.save()
+
+        redirect_url = self.request.GET.get('next')
+        if redirect_url is not None:
+            return redirect(redirect_url)
+
+        return redirect(
+            'vms:staffing-agency-employee-pending',
+            staffing_agency_slug=form.employee.agency.slug,
+        )
+
+    def get_form_kwargs(self):
+        """
+        Returns:
+            A dictionary containing the keyword arguments used to
+            instantiate the view's form class.
+        """
+        kwargs = super().get_form_kwargs()
+
+        kwargs['admin'] = get_object_or_404(
+            models.StaffingAgencyAdmin,
+            agency__slug=self.kwargs.get('staffing_agency_slug'),
+            user=self.request.user,
+        )
+
+        kwargs['employee'] = get_object_or_404(
+            models.StaffingAgencyEmployee,
+            id=self.kwargs.get('employee_id'),
+        )
+
+        return kwargs
+
+
+class StaffingAgencyEmployeeCreateView(LoginRequiredMixin, FormView):
+    """
+    Apply as an employee to a staffing agency.
+    """
+    form_class = forms.StaffingAgencyEmployeeCreateForm
+    success_url = reverse_lazy('vms:dashboard')
+    template_name = 'vms/staffing-agency-apply.html'
+
+    def form_valid(self, form):
+        """
+        Save the form and redirect the user.
+
+        Args:
+            form:
+                The form to save.
+
+        Returns:
+            A response redirecting the user to their dashboard.
+        """
+        form.save(self.request.user)
+
+        return super().form_valid(form)
+
+    def get_form_kwargs(self):
+        """
+        Get the keyword arguments used to instantiate the form.
+
+        Returns:
+            A dictionary containing the arguments used to instantiate an
+            instance of the view's form class.
+        """
+        kwargs = super().get_form_kwargs()
+
+        kwargs['user'] = self.request.user
+
+        return kwargs
+
+
+class StaffingAgencyEmployeeDetailView(LoginRequiredMixin, generic.DetailView):
+    context_object_name = 'employee'
+    template_name = 'vms/staffing-agency-employee.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        Get context data to render the view's template with.
+
+        Args:
+            **kwargs:
+
+        Returns:
+            A dictionary containing context to render the view's
+            template with.
+        """
+        context = super().get_context_data(**kwargs)
+
+        context['client_employees'] = models.Employee.objects.filter(
+            staffing_agency=self.object.agency,
+            user=self.object.user,
+        )
+
+        return context
+
+    def get_object(self, *args, **kwargs):
+        """
+        Returns:
+            The staffing agency employee whose ID is specified in the
+            URL.
+        """
+        return get_object_or_404(
+            models.StaffingAgencyEmployee,
+            agency__admin__user=self.request.user,
+            agency__slug=self.kwargs.get('staffing_agency_slug'),
+            id=self.kwargs.get('employee_id'),
+        )
+
+
+class StaffingAgencyEmployeePendingListView(
+    LoginRequiredMixin,
+    generic.ListView,
+):
+    """
+    List the pending employees for a staffing agency.
+    """
+    context_object_name = 'employees'
+    template_name = 'vms/staffing-agency-employee-pending.html'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._agency = None
+
+    def get_context_data(self, *args, **kwargs):
+        """
+        Returns:
+            The context used to render the view's template.
+        """
+        context = super().get_context_data(*args, **kwargs)
+
+        context['agency'] = self._agency
+
+        return context
+
+    def get_queryset(self):
+        """
+        Returns:
+            A queryset containing the pending employees for the staffing
+            agency whose slug is given in the URL.
+        """
+        self._agency = get_object_or_404(
+            models.StaffingAgency,
+            admin__user=self.request.user,
+            slug=self.kwargs.get('staffing_agency_slug'),
+        )
+
+        return self._agency.employees.filter(time_approved=None)
 
 
 class TimeRecordApproveView(LoginRequiredMixin, generic.FormView):
@@ -626,54 +821,4 @@ class UnapprovedTimeRecordListView(LoginRequiredMixin, generic.ListView):
             employee__client=client,
         ).order_by(
             '-time_start',
-        )
-
-
-class StaffingAgencyView(LoginRequiredMixin, generic.DetailView):
-    context_object_name = 'staffing_agency'
-    template_name = 'vms/staffing-agency.html'
-
-    def get_object(self, **kwargs):
-        return get_object_or_404(
-            models.StaffingAgency,
-            admin__user=self.request.user,
-            slug=self.kwargs.get('staffing_agency_slug'),
-        )
-
-
-class StaffingAgencyEmployeeView(LoginRequiredMixin, generic.DetailView):
-    context_object_name = 'employee'
-    template_name = 'vms/staffing-agency-employee.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Get context data to render the view's template with.
-
-        Args:
-            **kwargs:
-
-        Returns:
-            A dictionary containing context to render the view's
-            template with.
-        """
-        context = super().get_context_data(**kwargs)
-
-        context['client_employees'] = models.Employee.objects.filter(
-            staffing_agency=self.object.agency,
-            user=self.object.user,
-        )
-
-        return context
-
-    def get_object(self, *args, **kwargs):
-        """
-        Returns:
-            The staffing agency employee whose ID is specified in the
-            URL.
-        """
-        return get_object_or_404(
-            models.StaffingAgencyEmployee,
-            agency__admin__user=self.request.user,
-            agency__slug=self.kwargs.get('staffing_agency_slug'),
-            id=self.kwargs.get('employee_id'),
         )

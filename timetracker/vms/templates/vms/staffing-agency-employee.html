@@ -13,6 +13,15 @@
 
   <h1 class="mb-5">{{ employee.user.name }}</h1>
 
+  {% if not employee.is_approved %}
+    <div class="alert alert-warning my-5">
+      <p>
+        {{ employee.user.name }} has not been approved yet.
+      </p>
+      <a class="btn btn-sm btn-warning" href="{% url 'vms:staffing-agency-employee-approve' employee.agency.slug employee.id %}">Approve</a>
+    </div>
+  {% endif %}
+
   <div class="row mb-4">
     <div class="col-sm-12 col-md-9 col-lg-8">
       <h2 class="mb-sm-4">Employers</h2>

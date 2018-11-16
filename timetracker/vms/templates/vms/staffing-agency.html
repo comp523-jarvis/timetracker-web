@@ -3,11 +3,74 @@
 {% block title %}{{ staffing_agency.name }}{% endblock %}
 
 {% block content %}
+  <div class="row">
+    <section class="col-sm-12 col-lg-6 mb-5 mb-lg-1" id="header">
+      <h1 class="display-4 mb-2">{{ staffing_agency.name }}</h1>
+    </section>
 
- <h1>{{staffing_agency.name}}</h1>
- <p>{{staffing_agency.notes}}</p>
- <h2>List of employees associated with {{staffing_agency.name}}</h2>
- {% for employee in staffing_agency.employees.all %}
-  <p><a class="btn btn-primary" href="{{ employee.get_absolute_url }}">{{employee.user.name}}</a></p>
- {% endfor %}
+    <section class="col-sm-12 col-lg-6" id="contact">
+      <div class="card">
+        <h2 class="card-header">Contact</h2>
+        <div class="card-body">
+          <p class="card-text"><strong>Email:</strong> <a href="mailto:{{ staffing_agency.email }}" target="_blank">{{ staffing_agency.email }}</a></p>
+          {% if staffing_agency.phone_number %}
+            <p class="card-text"><strong>Phone:</strong> {{ staffing_agency.phone_number }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  {% if is_admin %}
+    <hr class="my-5">
+
+    <h2 class="text-center mb-4">Manage Staffing Agency</h2>
+    <div class="row">
+      <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card h-100">
+          <h3 class="card-header text-center">Pending Employees</h3>
+          <div class="card-body">
+            <p class="card-text">
+              View and approve the employees who have applied to {{ staffing_agency.name }}.
+            </p>
+          </div>
+          <div class="card-footer">
+            <a class="btn btn-block btn-sm btn-primary" href="{% url 'vms:staffing-agency-employee-pending' staffing_agency.slug %}">View Pending Employees</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-5">
+
+    <h2 class="mb-4">Employees</h2>
+    {% if staffing_agency.employees.all %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Approval Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for employee in staffing_agency.employees.all %}
+            <tr>
+              <td><a href="{{ employee.get_absolute_url }}">{{ employee.user.name }}</a></td>
+              <td>
+                {% if employee.is_approved %}
+                  <span class="badge badge-success">Approved</span>
+                {% else %}
+                  <span class="badge badge-warning">Pending</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="alert alert-info">
+        There are no employees registered with this staffing agency yet.
+      </p>
+    {% endif %}
+  {% endif %}
 {% endblock %}

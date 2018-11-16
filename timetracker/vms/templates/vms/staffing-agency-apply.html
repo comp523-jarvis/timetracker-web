@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block title %}Apply to a Staffing Agency{% endblock %}
+
+{% block content %}
+  <div class="col-sm-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+    <h1 class="mb-5">Apply to a Staffing Agency</h1>
+
+    {% if form.fields.staffing_agency.queryset %}
+      <div class="alert alert-info">
+        <p class="font-weight-bold mb-1">Note</p>
+        <p class="mb-0">
+          If the staffing agency you are trying to apply to is not listed, it is because you have already applied to it.
+        </p>
+      </div>
+
+      <form method="post">
+        {{ form | crispy }}
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Apply</button>
+      </form>
+    {% else %}
+      <p class="alert alert-warning">
+        You have already applied to all registered staffing agencies. If an agency has requested that you apply to them, please contact them to ensure you are not already registered.
+      </p>
+    {% endif %}
+  </div>
+{% endblock %}

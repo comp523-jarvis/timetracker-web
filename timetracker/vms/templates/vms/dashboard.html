@@ -2,27 +2,40 @@
 
 {% block content %}
   <h1>Dashboard</h1>
-  <h2>Quick Links</h2>
+  <div class="alert alert-info my-4">
+    <p>Is your job not listed below? Apply to the appropriate staffing agency so they can place you in a job.</p>
+    <a class="btn btn-primary btn-sm" href="{% url 'vms:create-staff-employee' %}">Apply to a Staffing Agency</a>
+  </div>
   {% if staff_admins %}
-    <h3>Staff List</h3>
-    <ul>
+    <section class="my-4">
+      <h2>Staffing Agencies</h2>
+      <p class="lead">Manage the staffing agencies that you are an administrator of.</p>
+      <ul>
         {% for admin in staff_admins %}
-          <li>{{ admin.agency }}<a href="{{ admin.agency.get_absolute_url }}"> Go to staffing agency page.</a></li>
+          <li><a href="{{ admin.agency.get_absolute_url }}">{{ admin.agency.name }}</a></li>
         {% endfor %}
-    </ul>
+      </ul>
+    </section>
   {% endif %}
   {% if client_admins %}
-  <h3>Client List</h3>
-    <ul>
+    <section class="my-4">
+      <h2>Companies</h2>
+      <p class="lead">Manage the companies that you are an administrator of.</p>
+      <ul>
         {% for client_admin in client_admins %}
-          <li>{{ client_admin.client.name }}<a href="{{ client_admin.client.get_absolute_url }}"> Go to client page.</a></li>
+          <li><a href="{{ client_admin.client.get_absolute_url }}">{{ client_admin.client.name }}</a></li>
         {% endfor %}
-    </ul>
+      </ul>
+    </section>
   {% endif %}
   {% if employees %}
-  <h3>Employee List</h3>
-    {% for employee in employees %}
-      {{ employee }}, working for {{ employee.client.name}}: <a href="{{ employee.get_absolute_url }}">Go to employee page.</a></br>
-    {% endfor %}
+    <section class="my-4">
+      <h2>Employers</h2>
+      <ul>
+        {% for employee in employees %}
+          <li><a href="{{ employee.client.get_absolute_url }}">{{ employee.client.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
   {% endif %}
 {% endblock %}
