@@ -4,91 +4,148 @@
 {% load time_record_tags %}
 
 {% block content %}
-  <h2>Employee: {{employee.user.name}}</h2>
-  <h2>
-    {% if is_employee %}
-    You are
-    {% else %}
-    {{employee.user.name}} is
-    {% endif %}
-    {% if not employee.is_clocked_in %} not{% endif %} currently clocked in{% if employee.is_clocked_in %} as a {{open_time_record.job.name}} for {{employee.staffing_agency}}{% endif %}.
-    {% if is_employee %}
-      {% if employee.is_clocked_in %}
-        <a class="btn btn-primary" href="{{ employee.clock_out_url }}">Clock Out</a>
-      {% else %}
-        <a class="btn btn-primary" href="{{ employee.clock_in_url }}">Clock In</a>
-      {% endif %}
-    {% endif %}
-  </h2>
-  <h3>Time Records</h3>
-  <p>
-  {% if is_employee %}
-  You have
-  {% else %}
-  {{employee.user.name}} has
-  {% endif %}
-   {{ unapproved_count }} unapproved time record{{ unapproved_count | pluralize }}.{% if not unapproved_count %} You are all up to date!{% endif %}</p>
-  <h4>{{ employee }}</h4>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Start Time</th>
-        <th scope="col">End Time</th>
-        <th scope="col">Job</th>
-        <th scope="col">Pay Rate</th>
-        <th scope="col">Duration</th>
-        <th scope="col">Projected Pay</th>
-        <th scope="col">Approved</th>
-        {% if is_client_admin %}
-          <th scope="col">Approve</th>
-        {% endif %}
-      </tr>
-    </thead>
-    <tbody>
-      {% for record in employee.time_records.all|dictsortreversed:'time_start' %}
-        <tr>
-          <td>{{ record.time_start|date:'n/j/Y g:i a' }}</td>
-          <td>
-            {% if record.time_end %}
-              {{ record.time_end|date:'n/j/Y g:i a' }}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-          <td>{{ record.job.name }}</td>
-          <td>${{ record.pay_rate | floatformat:2 | intcomma }}</td>
-          <td>
-            {% if record.time_end %}
-              {{record.total_time | time_delta_as_hours}}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-          <td>{% if record.time_end %}
-              ${{record.projected_earnings | floatformat:2 | intcomma }}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-          <td class="text-center">{% if record.is_approved %}✔{% else %}✗{% endif %}</td>
-          {% if is_client_admin %}
-          <td>
-            {% if not record.is_approved and record.time_end %}
-              <form action="{{ record.approval_url }}?next={{ employee.get_absolute_url }}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-outline-success btn-sm" type="submit">
-                  Approve
-                </button>
-              </form>
-            {% elif not record.time_end %}
-              <span class="badge badge-secondary">In Progress</span>
-            {% else %}
-              <span class="badge badge-success">Approved</span>
-            {% endif %}
-          </td>
+  <nav aria-label="breadcrumb" class="mb-5">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ employee.client.get_absolute_url }}">{{ employee.client.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ employee.user.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <section class="col-sm-12 col-lg-6 mb-5 mb-lg-1" id="header">
+      <h1 class="display-4 mb-3">{{ employee.user.name }}</h1>
+      <h2 class="h6 mb-1">
+        <strong>Employer:</strong>
+        <a href="{{ employee.client.get_absolute_url }}">{{ employee.client.name }}</a>
+        (ID: {{ employee.client.id }})
+      </h2>
+      <h2 class="h6 mb-1"><strong>ID:</strong> {{ employee.employee_id }}</h2>
+      <p class="text-muted small">Employees use these IDs to identify themselves and the company they are working for when clocking in and out.</p>
+    </section>
+
+    <section class="col-sm-12 col-lg-6" id="contact">
+      <div class="card">
+        <h2 class="card-header">Status</h2>
+        <div class="card-body">
+          {% if employee.is_clocked_in %}
+            <h3 class="card-title">Clocked In</h3>
+            <p class="card-text">
+              <strong>Job</strong>
+              <br>
+              {{ open_time_record.job.name }}
+            </p>
+            <p class="card-text">
+              <strong>Time Started</strong>
+              <br>
+              {{ open_time_record.time_start | date:'n/j/Y g:i a' }}
+            </p>
+          {% else %}
+            <h3 class="card-title">Not Working</h3>
           {% endif %}
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        </div>
+        {% if is_employee and employee.is_active %}
+          <div class="card-footer">
+            {% if employee.is_clocked_in %}
+              <form action="{{ employee.clock_out_url }}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-block btn-sm btn-primary" type="submit">Clock Out</button>
+              </form>
+            {% else %}
+              <a class="btn btn-block btn-sm btn-primary" href="{{ employee.clock_in_url }}">Clock In</a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+
+  <section class="my-5">
+    <h2 class="mb-4">Time Records</h2>
+    {% if employee.time_records.all %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Start Time</th>
+            <th scope="col">End Time</th>
+            <th scope="col">Job</th>
+            <th scope="col">Pay Rate</th>
+            <th scope="col">Duration</th>
+            <th scope="col">Projected Pay</th>
+            {% if is_client_admin %}
+              <th scope="col">Approve</th>
+            {% else %}
+              <th scope="col">Approved</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in employee.time_records.all|dictsortreversed:'time_start' %}
+            <tr>
+              <td>{{ record.time_start|date:'n/j/Y g:i a' }}</td>
+              <td>
+                {% if record.time_end %}
+                  {{ record.time_end|date:'n/j/Y g:i a' }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td>{{ record.job.name }}</td>
+              <td>${{ record.pay_rate | floatformat:2 | intcomma }}</td>
+              <td>
+                {% if record.time_end %}
+                  {{record.total_time | time_delta_as_hours}}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td>{% if record.time_end %}
+                  ${{record.projected_earnings | floatformat:2 | intcomma }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              {% if is_client_admin %}
+                <td>
+                  {% if not record.is_approved and record.time_end %}
+                    <form action="{{ record.approval_url }}?next={{ employee.get_absolute_url }}" method="post">
+                      {% csrf_token %}
+                      <button class="btn btn-outline-success btn-sm" type="submit">
+                        Approve
+                      </button>
+                    </form>
+                  {% elif not record.time_end %}
+                    <span class="badge badge-secondary">In Progress</span>
+                  {% else %}
+                    <span class="badge badge-success">Approved</span>
+                  {% endif %}
+                </td>
+              {% else %}
+                <td>
+                  {% if record.is_approved %}
+                    <span class="badge badge-success">Approved</span>
+                  {% elif not record.time_end %}
+                    <span class="badge badge-secondary">In Progress</span>
+                  {% else %}
+                    <span class="badge badge-info">Pending Approval</span>
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-info">
+        <p class="font-weight-bold mb-0">No Time Records</p>
+        <p class="mb-0">
+          {% if is_employee %}
+            You have not tracked any hours yet.
+            {% if employee.is_active %}<a href="{{ employee.clock_in_url }}">Clock in</a> to create one.{% endif %}
+          {% else %}
+            {{ employee.user.name }} has not tracked any hours yet.
+          {% endif %}
+        </p>
+      </div>
+    {% endif %}
+  </section>
 {% endblock %}

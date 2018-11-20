@@ -1,12 +1,43 @@
 {% extends 'base.html' %}
 
+{% load crispy_forms_tags %}
+
+
 {% block title %}Clock In{% endblock %}
 
 {% block content %}
-<h1>Clock In</h1>
-<form method="post">
-  {{ form.as_p }}
-  {% csrf_token %}
-  <button type="submit">Clock In</button>
-</form>
+  <div class="col-sm-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ form.employee.client.get_absolute_url }}">{{ form.employee.client.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{{ form.employee.get_absolute_url }}">{{ form.employee.user.name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Clock In</li>
+      </ol>
+    </nav>
+
+    <h1 class="mb-5">Clock In</h1>
+
+    <div class="row">
+      <div class="col-sm-12 col-md-6">
+        <div class="form-group">
+          <label for="client-id">Client ID</label>
+          <input class="form-control" disabled id="client-id" value="{{ form.employee.client.id }}" readonly>
+          <small>The ID of the client you are working for.</small>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-6">
+        <div class="form-group">
+          <label for="employee-id">Employee ID</label>
+          <input class="form-control" disabled id="employee-id" value="{{ form.employee.employee_id }}" readonly>
+          <small>Your employee ID for {{ form.employee.client.name }}.</small>
+        </div>
+      </div>
+    </div>
+
+    <form method="post">
+      {{ form | crispy }}
+      {% csrf_token %}
+      <button class="btn btn-primary" type="submit">Clock In</button>
+    </form>
+  </div>
 {% endblock %}
