@@ -33,7 +33,7 @@
       <h2>Employers</h2>
       <ul>
         {% for employee in employees %}
-          <li><a href="{{ employee.client.get_absolute_url }}">{{ employee.client.name }}</a></li>
+          <li><a href="{{ employee.get_absolute_url }}">{{ employee.client.name }}</a></li>
         {% endfor %}
       </ul>
     </section>
