@@ -61,7 +61,19 @@
 
   <section class="my-5">
     <h2 class="mb-4">Time Records</h2>
-    {% if employee.time_records.all %}
+    <p>
+     <form method="GET">
+        <legend>Select time period:</legend>
+        <br>
+        From:
+        <input id="start_date" type="date" name="start_date" value="{{start_date|date:"d/m/Y"}}">
+        To:
+        <input id="end_date" type="date" name="end_date" value="{{end_date|date:"d/m/Y"}}">
+        <input type="submit">
+      </form>
+    </p>
+
+    {% if shown_time_records %}
       <table class="table">
         <thead>
           <tr>
@@ -79,7 +91,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for record in employee.time_records.all|dictsortreversed:'time_start' %}
+          {% for record in shown_time_records|dictsortreversed:'time_start' %}
             <tr>
               <td>{{ record.time_start|date:'n/j/Y g:i a' }}</td>
               <td>

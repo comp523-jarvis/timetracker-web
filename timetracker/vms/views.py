@@ -477,11 +477,27 @@ class EmployeeDetailView(LoginRequiredMixin, generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        start_date = self.request.GET.get('start_date')
+        end_date = self.request.GET.get('end_date')
+
+        shown_time_records = self.object.time_records.all()
+
+        if start_date:
+            shown_time_records = shown_time_records.filter(
+                time_start__gte=start_date,
+            )
+        if end_date:
+            if start_date and end_date < start_date:
+                end_date = start_date
+            shown_time_records = shown_time_records.filter(
+                time_end__lte=end_date,
+            )
+
         open_time_record = self.object.time_records.filter(
             time_end=None,
         ).first()
-        context['open_time_record'] = open_time_record
 
+        context['open_time_record'] = open_time_record
         context['is_employee'] = self.object.user == self.request.user
 
         is_client_admin = models.ClientAdmin.objects.filter(
@@ -490,17 +506,19 @@ class EmployeeDetailView(LoginRequiredMixin, generic.DetailView):
         ).exists()
         context['is_client_admin'] = is_client_admin
 
-        unapproved_count = self.object.time_records.filter(
+        unapproved_count = shown_time_records.filter(
             approval=None,
         ).exclude(
             time_end=None,
         ).count()
         context['unapproved_count'] = unapproved_count
 
-        seconds_worked = self.object.total_time
+        seconds_worked = shown_time_records.total_time().total_seconds()
         seconds_worked = time_utils.round_time_worked(seconds_worked)
         total_hours = seconds_worked / (60 * 60)
         context['total_hours'] = total_hours
+
+        context['shown_time_records'] = shown_time_records
 
         return context
 
