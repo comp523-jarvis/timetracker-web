@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+{% if not pending_employees %}
+    <p class="alert alert-info">
+      There are no pending employees
+    </p>
+{% else %}
 {% block title %}Pending Employees: Approve or Deny{% endblock %}
-
 <table class="table">
   <thead>
     <tr>
@@ -22,5 +25,5 @@
     {% endfor %}
   </tbody>
 </table>
-
+{% endif %}
 {% endblock %}
