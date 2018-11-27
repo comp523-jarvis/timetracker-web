@@ -9,7 +9,7 @@ from vms import models
 logger = logging.getLogger(__name__)
 
 
-def clock_in(client_id, employee_id, project_id):
+def clock_in(client_id, employee_id, project_id=None):
     """
     Clock in an employee.
 
@@ -37,6 +37,9 @@ def clock_in(client_id, employee_id, project_id):
 
     if employee.is_clocked_in:
         return 'You are already clocked in. Please clock out first.'
+
+    if not project_id:
+        return list_projects(client_id)
 
     try:
         project = models.ClientJob.objects.get(
@@ -120,23 +123,19 @@ def list_projects(client_id):
     return f'Select the ID of one of the following projects:\n{projects}'
 
 
-def parse_params(data):
-    output_contexts = data['queryResult'].get('outputContexts', [])
-    params = data['queryResult'].get('parameters', {})
-
-    base_params = {}
-    for context in output_contexts:
-        for key, value in context.get('parameters', {}).items():
-            base_params[key] = value
-
-    base_params.update(params)
-
-    return base_params
-
-
 def process(data):
+    """
+    Fulfill a webhook request from Dialogflow.
+
+    Args:
+        data:
+            The data received from Dialogflow.
+
+    Returns:
+        A dictionary containing the data to return to Dialogflow.
+    """
     intent = data['queryResult']['intent']['name']
-    params = parse_params(data)
+    params = data['queryResult'].get('parameters', {})
 
     if intent == settings.DIALOGFLOW_INTENTS['CLOCK_IN']:
         client_id = params['clientID']
@@ -153,13 +152,6 @@ def process(data):
 
         return {
             'fulfillmentText': clock_out(client_id, employee_id),
-        }
-
-    elif intent == settings.DIALOGFLOW_INTENTS['LIST_PROJECTS']:
-        client_id = params['clientID']
-
-        return {
-            'fulfillmentText': list_projects(client_id),
         }
 
     logger.warning('Could not process unknown intent %s', intent)

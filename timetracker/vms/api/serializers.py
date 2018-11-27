@@ -17,7 +17,6 @@ class QuerySerializer(serializers.Serializer):
     fulfillment request.
     """
     intent = IntentSerializer(write_only=True)
-    outputContexts = serializers.JSONField(write_only=True)
     parameters = serializers.DictField()
 
 
