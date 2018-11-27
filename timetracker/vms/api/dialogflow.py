@@ -120,9 +120,23 @@ def list_projects(client_id):
     return f'Select the ID of one of the following projects:\n{projects}'
 
 
+def parse_params(data):
+    output_contexts = data['queryResult'].get('outputContexts', [])
+    params = data['queryResult'].get('parameters', {})
+
+    base_params = {}
+    for context in output_contexts:
+        for key, value in context.get('parameters', {}).items():
+            base_params[key] = value
+
+    base_params.update(params)
+
+    return base_params
+
+
 def process(data):
     intent = data['queryResult']['intent']['name']
-    params = data['queryResult']['parameters']
+    params = parse_params(data)
 
     if intent == settings.DIALOGFLOW_INTENTS['CLOCK_IN']:
         client_id = params['clientID']
