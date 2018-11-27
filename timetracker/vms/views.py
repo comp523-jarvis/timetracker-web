@@ -480,6 +480,9 @@ class EmployeeDetailView(LoginRequiredMixin, generic.DetailView):
         start_date = self.request.GET.get('start_date')
         end_date = self.request.GET.get('end_date')
 
+        context['start_date'] = start_date
+        context['end_date'] = end_date
+
         shown_time_records = self.object.time_records.all()
 
         if start_date:

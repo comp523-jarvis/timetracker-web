@@ -62,14 +62,22 @@
   <section class="my-5">
     <h2 class="mb-4">Time Records</h2>
     <p>
-     <form method="GET">
-        <legend>Select time period:</legend>
+     <form class="form-inline" method="GET">
+        <legend>Select Time Period</legend>
         <br>
-        From:
-        <input id="start_date" type="date" name="start_date" value="{{start_date|date:"d/m/Y"}}">
-        To:
-        <input id="end_date" type="date" name="end_date" value="{{end_date|date:"d/m/Y"}}">
-        <input type="submit">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <i class="input-group-text fas fa-calendar-alt"></i>
+          </div>
+          <input class="form-control form-control-sm mr-3" name="start_date" type="date" value="{{ start_date }}">
+        </div>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <i class="input-group-text fas fa-calendar-alt"></i>
+          </div>
+          <input class="form-control form-control-sm mr-3" name="end_date" type="date" value="{{ end_date }}">
+        </div>
+        <button class="btn btn-primary btn-sm" type="submit">Submit</button>
       </form>
     </p>
 
