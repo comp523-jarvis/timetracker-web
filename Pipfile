@@ -9,6 +9,7 @@ django = "*"
 django-crispy-forms = "*"
 django-ses = "*"
 django-email-utils = "*"
+djangorestframework = "*"
 
 [dev-packages]
 ipython = "*"

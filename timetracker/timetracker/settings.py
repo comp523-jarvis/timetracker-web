@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     # Third Party Apps
     'crispy_forms',
+    'rest_framework',
 
     # Custom Apps
     'account',
@@ -235,6 +236,15 @@ ID_GENERATION_ATTEMPTS_FAIL = 1000
 
 CLIENT_ID_LENGTH = 5
 EMPLOYEE_ID_LENGTH = 5
+
+
+# Dialogflow Settings
+
+DIALOGFLOW_INTENTS = {
+    'CLOCK_IN': os.getenv('DJANGO_DIALOGFLOW_INTENT_CLOCK_IN'),
+    'CLOCK_OUT': os.getenv('DJANGO_DIALOGFLOW_INTENT_CLOCK_OUT'),
+    'LIST_PROJECTS': os.getenv('DJANGO_DIALOGFLOW_INTENT_LIST_PROJECTS'),
+}
 
 
 # Crispy Forms

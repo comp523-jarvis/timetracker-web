@@ -96,6 +96,10 @@ staff_detail_urls = [
 
 urlpatterns = [
     path(
+        'api/',
+        include('vms.api.urls', namespace='api'),
+    ),
+    path(
         'clients/<slug:client_slug>/',
         include(client_detail_urls)
     ),
