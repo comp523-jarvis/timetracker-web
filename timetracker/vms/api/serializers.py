@@ -17,7 +17,7 @@ class QuerySerializer(serializers.Serializer):
     fulfillment request.
     """
     intent = IntentSerializer(write_only=True)
-    parameters = serializers.DictField(child=serializers.CharField())
+    parameters = serializers.DictField()
 
 
 class DialogflowWebhookSerializer(serializers.Serializer):
