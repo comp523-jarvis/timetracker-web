@@ -542,8 +542,7 @@ class PendingEmployeesView(LoginRequiredMixin, ListView):
             slug=self.kwargs.get('client_slug'),
             admin__user=self.request.user,
         )
-
-        return client.employees.filter(is_approved=False)
+        return client.employees.filter(time_approved=None)
 
 
 class StaffingAgencyDetailView(generic.DetailView):
