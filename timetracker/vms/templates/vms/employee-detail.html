@@ -69,13 +69,13 @@
           <div class="input-group-prepend">
             <i class="input-group-text fas fa-calendar-alt"></i>
           </div>
-          <input class="form-control form-control-sm mr-3" name="start_date" type="date" value="{{ start_date }}">
+          <input class="form-control form-control-sm mr-3" name="start_date" type="date" value="{{ start_date | date:"Y-m-d" }}">
         </div>
         <div class="input-group">
           <div class="input-group-prepend">
             <i class="input-group-text fas fa-calendar-alt"></i>
           </div>
-          <input class="form-control form-control-sm mr-3" name="end_date" type="date" value="{{ end_date }}">
+          <input class="form-control form-control-sm mr-3" name="end_date" type="date" value="{{ end_date | date:"Y-m-d" }}">
         </div>
         <button class="btn btn-primary btn-sm" type="submit">Submit</button>
       </form>

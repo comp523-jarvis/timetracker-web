@@ -4,7 +4,7 @@ from django.views import generic
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 from django.urls import reverse_lazy
 
-from vms import forms, models, time_utils
+from vms import forms, mixins, models, time_utils
 
 
 class ClientAdminInviteAcceptView(LoginRequiredMixin, generic.FormView):
@@ -470,31 +470,23 @@ class EmployeeApproveView(LoginRequiredMixin, FormView):
         )
 
 
-class EmployeeDetailView(LoginRequiredMixin, generic.DetailView):
+class EmployeeDetailView(
+    mixins.DateRangeMixin,
+    LoginRequiredMixin,
+    generic.DetailView,
+):
+    """
+    View the details of a single employee.
+    """
     context_object_name = 'employee'
     template_name = 'vms/employee-detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        start_date = self.request.GET.get('start_date')
-        end_date = self.request.GET.get('end_date')
-
-        context['start_date'] = start_date
-        context['end_date'] = end_date
-
-        shown_time_records = self.object.time_records.all()
-
-        if start_date:
-            shown_time_records = shown_time_records.filter(
-                time_start__gte=start_date,
-            )
-        if end_date:
-            if start_date and end_date < start_date:
-                end_date = start_date
-            shown_time_records = shown_time_records.filter(
-                time_end__lte=end_date,
-            )
+        shown_time_records = self.filter_by_date(
+            self.object.time_records.all(),
+        )
 
         open_time_record = self.object.time_records.filter(
             time_end=None,
