@@ -18,7 +18,10 @@
       <p>
         {{ employee.user.name }} has not been approved yet.
       </p>
-      <a class="btn btn-sm btn-warning" href="{% url 'vms:staffing-agency-employee-approve' employee.agency.slug employee.id %}">Approve</a>
+      <form action="{% url 'vms:staffing-agency-employee-approve' employee.agency.slug employee.id %}?next={{ request.path }}" method="post">
+        {% csrf_token %}
+        <button class="btn btn-sm btn-warning" type="submit">Approve</button>
+      </form>
     </div>
   {% endif %}
 
