@@ -182,7 +182,10 @@ LOGOUT_REDIRECT_URL = 'home'
 
 # Email Settings
 
-DEFAULT_FROM_EMAIL = 'no-reply@cdriehuys.ulimi.com'
+DEFAULT_FROM_EMAIL = os.getenv(
+    'DJANGO_DEFAULT_FROM_EMAIL',
+    'no-reply@ulimidoes.com',
+)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 if os.getenv('DJANGO_SES_ENABLED', 'false').lower() == 'true':
