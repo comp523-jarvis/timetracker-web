@@ -26,7 +26,7 @@
 
     <h2 class="text-center mb-4">Manage Staffing Agency</h2>
     <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4">
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
         <div class="card h-100">
           <h3 class="card-header text-center">Pending Employees</h3>
           <div class="card-body">
@@ -36,6 +36,20 @@
           </div>
           <div class="card-footer">
             <a class="btn btn-block btn-sm btn-primary" href="{% url 'vms:staffing-agency-employee-pending' staffing_agency.slug %}">View Pending Employees</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+        <div class="card h-100">
+          <h3 class="card-header text-center">Create a Client</h3>
+          <div class="card-body">
+            <p class="card-text">
+              As a staffing agency administrator, you can create new clients to apply employees to.
+            </p>
+          </div>
+          <div class="card-footer">
+            <a class="btn btn-block btn-sm btn-primary" href="{% url 'vms:client-create' %}">Create Client</a>
           </div>
         </div>
       </div>
