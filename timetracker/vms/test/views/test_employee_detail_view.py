@@ -1,6 +1,133 @@
 import pytest
 import datetime
+
+from django.http import Http404
+from django.urls import reverse
 from django.utils import timezone
+
+from vms import views
+
+
+def test_get_object_client_admin(
+    client_admin_factory,
+    employee_factory,
+    request_factory,
+):
+    """
+    If the requesting user is an administrator of the client the
+    employee works for, they should be able to access the view.
+    """
+    admin = client_admin_factory()
+    employee = employee_factory(client=admin.client)
+
+    url = employee.get_absolute_url()
+    request = request_factory.get(url)
+    request.user = admin.user
+
+    view = views.EmployeeDetailView()
+    view.kwargs = {
+        'client_slug': employee.client.slug,
+        'employee_id': employee.employee_id,
+    }
+    view.request = request
+
+    assert view.get_object() == employee
+
+
+def test_get_object_invalid_id(client_admin_factory, request_factory):
+    """
+    If the provided employee ID does not exist, a 404 response should be
+    returned.
+    """
+    admin = client_admin_factory()
+    kwargs = {'client_slug': admin.client.slug, 'employee_id': 1}
+
+    url = reverse(
+        'vms:employee-dash',
+        kwargs=kwargs,
+    )
+    request = request_factory.get(url)
+    request.user = admin.user
+
+    view = views.EmployeeDetailView()
+    view.kwargs = kwargs
+    view.request = request
+
+    with pytest.raises(Http404):
+        view.get_object()
+
+
+def test_get_object_other_user(
+    employee_factory,
+    request_factory,
+    user_factory,
+):
+    """
+    Users not affiliated with an employee should receive a 404 response
+    if they try to view the employee.
+    """
+    user = user_factory()
+    employee = employee_factory()
+
+    url = employee.get_absolute_url()
+    request = request_factory.get(url)
+    request.user = user
+
+    view = views.EmployeeDetailView()
+    view.kwargs = {
+        'client_slug': employee.client.slug,
+        'employee_id': employee.employee_id,
+    }
+    view.request = request
+
+    with pytest.raises(Http404):
+        view.get_object()
+
+
+def test_get_object_self(employee_factory, request_factory):
+    """
+    The employee should be able to fetch their own record.
+    """
+    employee = employee_factory()
+
+    url = employee.get_absolute_url()
+    request = request_factory.get(url)
+    request.user = employee.user
+
+    view = views.EmployeeDetailView()
+    view.kwargs = {
+        'client_slug': employee.client.slug,
+        'employee_id': employee.employee_id,
+    }
+    view.request = request
+
+    assert view.get_object() == employee
+
+
+def test_get_object_staffer(
+    employee_factory,
+    request_factory,
+    staffing_agency_admin_factory,
+):
+    """
+    Admins of the staffing agency the employee was hired by should be
+    able to get the employee instance.
+    """
+    admin = staffing_agency_admin_factory()
+    employee = employee_factory(staffing_agency=admin.agency)
+
+    url = employee.get_absolute_url()
+    request = request_factory.get(url)
+    request.user = admin.user
+
+    view = views.EmployeeDetailView()
+    view.kwargs = {
+        'client_slug': employee.client.slug,
+        'employee_id': employee.employee_id,
+    }
+    view.request = request
+
+    assert view.get_object() == employee
 
 
 @pytest.mark.integration

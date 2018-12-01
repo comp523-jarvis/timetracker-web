@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 from django.views.generic import DetailView, FormView, ListView, TemplateView
@@ -530,7 +531,13 @@ class EmployeeDetailView(
             The employee with the ID and client slug specifieid in the
             URL.
         """
-        return models.Employee.objects.get(
+        is_self = Q(user=self.request.user)
+        is_staffer = Q(staffing_agency__admin__user=self.request.user)
+        is_supervisor = Q(client__admin__user=self.request.user)
+
+        return get_object_or_404(
+            models.Employee,
+            is_self | is_staffer | is_supervisor,
             client__slug=self.kwargs.get('client_slug'),
             employee_id=self.kwargs.get('employee_id'),
         )
