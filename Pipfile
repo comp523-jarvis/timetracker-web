@@ -4,21 +4,25 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-"psycopg2-binary" = "*"
-django-crispy-forms = "*"
-django-ses = "*"
-django-email-utils = "*"
-djangorestframework = "*"
+"psycopg2-binary" = "==2.7.6.1"
+django-crispy-forms = "==1.7.2"
+django-ses = "==0.8.7"
+django-email-utils = "==0.1.1"
+djangorestframework = "==3.9.0"
+boto = "==2.49.0"
+future = "==0.17.1"
+pytz = "==2018.7"
+Django = "==2.1.3"
+Sphinx = "*"
 
 [dev-packages]
 ipython = "*"
 "flake8" = "*"
 pytest = "*"
 pytest-django = "*"
-factory-boy = "*"
 codecov = "*"
 coverage = "*"
+factory_boy = "*"
 
 [requires]
 python_version = "3.6"

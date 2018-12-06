@@ -39,3 +39,6 @@ db.sqlite3
 
 # Coverage Reports
 .coverage
+
+# Build Documentation
+docs/_build/

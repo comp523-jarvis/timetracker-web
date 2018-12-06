@@ -26,7 +26,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'false').lower() == 'true'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', None)
 
 # Only use default secret key if DEBUG is turned on
-if SECRET_KEY is None and DEBUG:
+if SECRET_KEY is None and (DEBUG or os.environ.get('READTHEDOCS') == 'True'):
     SECRET_KEY = 'secret'
 
 allowed_host_string = os.environ.get('DJANGO_ALLOWED_HOSTS', None)

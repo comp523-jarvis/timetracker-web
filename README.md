@@ -5,6 +5,13 @@
 
 Web app and API for Ulimi time tracker.
 
+**Important Links**
+Deployed App
+  https://ulimiapps.com
+  
+Documentation
+  https://timetracker-web.readthedocs.io/en/latest/
+
 <!-- toc -->
 
 - [Deployment](#deployment)
