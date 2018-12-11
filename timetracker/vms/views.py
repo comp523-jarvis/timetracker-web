@@ -535,9 +535,12 @@ class EmployeeDetailView(
         is_staffer = Q(staffing_agency__admin__user=self.request.user)
         is_supervisor = Q(client__admin__user=self.request.user)
 
-        return get_object_or_404(
-            models.Employee,
+        employees = models.Employee.objects.filter(
             is_self | is_staffer | is_supervisor,
+        ).distinct()
+
+        return get_object_or_404(
+            employees,
             client__slug=self.kwargs.get('client_slug'),
             employee_id=self.kwargs.get('employee_id'),
         )

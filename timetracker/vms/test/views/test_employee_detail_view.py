@@ -104,6 +104,40 @@ def test_get_object_self(employee_factory, request_factory):
     assert view.get_object() == employee
 
 
+def test_get_object_self_and_multiple_admins(
+    client_admin_factory,
+    employee_factory,
+    request_factory,
+):
+    """
+    The employee should be able to fetch their own record if their are
+    multiple admins for the client company.
+
+    Regression test for GH-113.
+
+    https://github.com/comp523-jarvis/timetracker-web/issues/113
+    """
+    admin = client_admin_factory()
+    client_admin_factory(client=admin.client)
+    employee = employee_factory(
+        client=admin.client,
+        user=admin.user,
+    )
+
+    url = employee.get_absolute_url()
+    request = request_factory.get(url)
+    request.user = employee.user
+
+    view = views.EmployeeDetailView()
+    view.kwargs = {
+        'client_slug': employee.client.slug,
+        'employee_id': employee.employee_id,
+    }
+    view.request = request
+
+    assert view.get_object() == employee
+
+
 def test_get_object_staffer(
     employee_factory,
     request_factory,
