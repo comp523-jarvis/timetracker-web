@@ -24,6 +24,12 @@ def clock_in(client_id, employee_id, project_id=None):
     Returns:
         A response indicating the result of the clock in request.
     """
+    if not client_id:
+        return 'What is the ID of the company you are working for?'
+
+    if not employee_id:
+        return 'What is your employee ID?'
+
     try:
         employee = models.Employee.objects.get(
             client__id=client_id,
