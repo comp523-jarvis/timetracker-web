@@ -5,12 +5,9 @@
 
 Web app and API for Ulimi time tracker.
 
-**Important Links**
-Deployed App
-  https://ulimiapps.com
-  
-Documentation
-  https://timetracker-web.readthedocs.io/en/latest/
+Our deployed application is available at [ulimiapps.com][https://ulimiapps.com].
+
+Developer documentation is available in [`CONTRIBUTING.md`](CONTRIBUTING.md), with additional documentation at [timetracker-web.readthedocs.io/en/latest/](https://timetracker-web.readthedocs.io/en/latest/)
 
 <!-- toc -->
 
